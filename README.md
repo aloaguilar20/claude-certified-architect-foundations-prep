@@ -4,6 +4,16 @@ Open study materials for Anthropic's **Claude Certified Architect – Foundation
 
 > **Not affiliated with or endorsed by Anthropic.** This is independent, community-built study material. Exam names are Anthropic trademarks. Always verify logistics against the official exam guide and certification pages before scheduling.
 
+## 👋 About me — why this exists
+
+I'm **Alonso Aguilar**, a project management professional with **14 years in the IT world**, now doing what I'm most passionate about: **transitioning into AI as a professional** — not by reading about it, but by building with it every day.
+
+I work on independent projects as a **founder**, with **Claude Code** at the center of my workflow — projects like [**Biblicuentos**](https://biblicuentos.com) and [**SOHpro**](https://sohpro.app), an EV battery health platform. Preparing for the CCAR-F exam, I ended up building the study material I wished existed: organized by exam domain, checked against the current official docs, with a practice exam that simulates real scoring. Publishing it felt more useful than keeping it in a folder.
+
+I keep learning and adapting as a professional every single day — and honestly, that's the part I enjoy most. If this material helps you, I'd love to hear about it: **[connect with me on LinkedIn](https://www.linkedin.com/in/alonso-aguilar-araya/)**. And if you spot something outdated, [contribute](#-contributing) — this stays useful only if the community keeps it current.
+
+**Pura vida** 🇨🇷
+
 ## 🚀 Start here
 
 | Resource | What it is |
@@ -57,4 +67,4 @@ Spotted something outdated or disputed? Open an issue with a link to the officia
 
 ---
 
-Maintained by **Alonso Aguilar** · [LinkedIn](https://www.linkedin.com/in/alonso-aguilar-araya/). If this helped you pass, a ⭐ helps others find it.
+Maintained by **Alonso Aguilar** · [LinkedIn](https://www.linkedin.com/in/alonso-aguilar-araya/) — connect and tell me how the exam went! If this helped you pass, a ⭐ helps others find it.
