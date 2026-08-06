@@ -8,8 +8,8 @@ Open study materials for Anthropic's **Claude Certified Architect – Foundation
 
 | Resource | What it is |
 |---|---|
-| **[Interactive practice exam](https://YOUR_USERNAME.github.io/YOUR_REPO/practice-exam.html)** | 51 scenario-anchored questions · study / timed-simulation / quick-drill modes · scaled 100–1,000 scoring at the 720 line · generates a ranked review plan |
-| **[Interactive study reader](https://YOUR_USERNAME.github.io/YOUR_REPO/study-guide.html)** | The full guide as a day-by-day reader with progress tracking, deep-linked from every exam question |
+| **[Interactive practice exam](https://aloaguilar20.github.io/claude-certified-architect-foundations-prep/practice-exam.html)** | 51 scenario-anchored questions · study / timed-simulation / quick-drill modes · scaled 100–1,000 scoring at the 720 line · generates a ranked review plan |
+| **[Interactive study reader](https://aloaguilar20.github.io/claude-certified-architect-foundations-prep/study-guide.html)** | The full guide as a day-by-day reader with progress tracking, deep-linked from every exam question |
 | [Exam guide & strategy](guide/00-exam-guide.md) | Format, scoring, retakes, the six scenarios, and a 5-step method for scenario questions |
 | [Domain 1 — Agentic Architecture & Orchestration (27%)](guide/01-agentic-architecture.md) | The agentic loop, subagents, hooks, decomposition, sessions |
 | [Domain 2 — Tool Design & MCP Integration (18%)](guide/02-tool-design-mcp.md) | Tool descriptions, `tool_choice`, MCP servers, structured errors |
