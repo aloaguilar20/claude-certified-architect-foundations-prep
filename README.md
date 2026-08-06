@@ -4,16 +4,6 @@ Open study materials for Anthropic's **Claude Certified Architect – Foundation
 
 > **Not affiliated with or endorsed by Anthropic.** This is independent, community-built study material. Exam names are Anthropic trademarks. Always verify logistics against the official exam guide and certification pages before scheduling.
 
-## 👋 About me — why this exists
-
-I'm **Alonso Aguilar**, a project management professional with **14 years in the IT world**, now doing what I'm most passionate about: **transitioning into AI as a professional** — not by reading about it, but by building with it every day.
-
-I work on independent projects as a **founder**, with **Claude Code** at the center of my workflow — projects like [**Biblicuentos**](https://biblicuentos.com) and [**SOHpro**](https://sohpro.app), an EV battery health platform. Preparing for the CCAR-F exam, I ended up building the study material I wished existed: organized by exam domain, checked against the current official docs, with a practice exam that simulates real scoring. Publishing it felt more useful than keeping it in a folder.
-
-I keep learning and adapting as a professional every single day — and honestly, that's the part I enjoy most. If this material helps you, I'd love to hear about it: **[connect with me on LinkedIn](https://www.linkedin.com/in/alonso-aguilar-araya/)**. And if you spot something outdated, [contribute](#-contributing) — this stays useful only if the community keeps it current.
-
-**Pura vida** 🇨🇷
-
 ## 🚀 Start here
 
 | Resource | What it is |
@@ -45,6 +35,18 @@ I keep learning and adapting as a professional every single day — and honestly
 
 *Logistics change; verify on the official certification page before you book.*
 
+## 🔍 How this differs from other study repos
+
+The best-known community resource is [paullarionov/claude-certified-architect](https://github.com/paullarionov/claude-certified-architect) — genuinely excellent, with guides in 11 languages, and the original inspiration for this project's topic sequencing. This repo is complementary, with a different focus:
+
+- **Current logistics.** Written for the exam as delivered *today*: CCAR-F on Pearson VUE, scaled 100–1,000 scoring at the 720 line, multiple-response items, current retake rules — where older materials still describe the original Skilljar-era launch.
+- **Verified against today's official docs, cited per topic.** Every chapter links its primary sources, and drift is flagged explicitly (e.g. the four-hop import limit, `pause_turn`, `tool_choice: none`, current model IDs, batch-API tool support).
+- **An exam-strategy layer, not just content:** a 5-step method for scenario questions, distractor analysis (when a hook is *not* the answer), timing tactics, and a readiness checklist.
+- **A complete study system:** 28-day plan with checkpoints and a week-4 diagnose→repair→retest loop, per-domain cheat sheet, and flashcards.
+- **An instrumented practice exam:** domain-weighted scaled scoring at the 720 line, three modes, multiple-response items, reshuffled options, and a results screen that generates a ranked review plan deep-linked to the exact study day covering each miss.
+
+Use both — they reinforce each other.
+
 ## 📚 Sources & attribution
 
 - Written against **Anthropic's official CCAR-F exam guide** and the **official documentation**, which is cited per topic throughout:
@@ -60,6 +62,16 @@ Both HTML apps are single files with no build step and no network calls — clon
 ## 🤝 Contributing
 
 Spotted something outdated or disputed? Open an issue with a link to the official doc page that contradicts the text. Corrections with primary-source citations are merged fast.
+
+## 👋 About me — why this exists
+
+I'm **Alonso Aguilar**, a project management professional with **14 years in the IT world**, now doing what I'm most passionate about: **transitioning into AI as a professional** — not by reading about it, but by building with it every day.
+
+I work on independent projects as a **founder**, with **Claude Code** at the center of my workflow — projects like [**Biblicuentos**](https://biblicuentos.com) and [**SOHpro**](https://sohpro.app), an EV battery health platform. Preparing for the CCAR-F exam, I ended up building the study material I wished existed: organized by exam domain, checked against the current official docs, with a practice exam that simulates real scoring. Publishing it felt more useful than keeping it in a folder.
+
+I keep learning and adapting as a professional every single day — and honestly, that's the part I enjoy most. If this material helps you, I'd love to hear about it: **[connect with me on LinkedIn](https://www.linkedin.com/in/alonso-aguilar-araya/)**. And if you spot something outdated, [contribute](#-contributing) — this stays useful only if the community keeps it current.
+
+**Pura vida** 🇨🇷
 
 ## 📄 License
 
