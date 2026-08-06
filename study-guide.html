@@ -1,0 +1,1859 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Claude Certified Architect — Source Reader</title>
+<style>
+:root{--bg:#faf9f5;--panel:#fff;--ink:#1f1f1c;--soft:#5c5b55;--faint:#8a897f;--line:#e6e4db;--accent:#3b6ea5;--accent-bg:#eaf1f8;--code:#f3f1ea;--done:#1d9e75;--done-bg:#e1f5ee}
+@media(prefers-color-scheme:dark){:root{--bg:#1a1915;--panel:#242320;--ink:#ece9df;--soft:#b4b2a7;--faint:#88867c;--line:#39372f;--accent:#7fb0e6;--accent-bg:#1f2c3a;--code:#2d2b25;--done:#5dcaa5;--done-bg:#13332a}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.7 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+.topbar{position:sticky;top:0;z-index:20;background:var(--panel);border-bottom:1px solid var(--line);padding:10px 18px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.topbar h1{font-size:16px;font-weight:500;margin:0;flex:1;min-width:180px}
+.prog-wrap{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--soft)}
+.prog{width:140px;height:7px;background:var(--code);border-radius:5px;overflow:hidden}
+.prog-fill{height:100%;width:0;background:var(--done);transition:width .25s}
+.menu-btn{display:none;background:none;border:1px solid var(--line);color:var(--ink);border-radius:7px;padding:6px 10px;font-size:14px;cursor:pointer}
+.layout{display:flex;align-items:flex-start;max-width:1180px;margin:0 auto}
+.side{position:sticky;top:53px;height:calc(100vh - 53px);overflow-y:auto;width:290px;flex:0 0 290px;padding:14px 10px 40px;border-right:1px solid var(--line)}
+.search{width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:7px;background:var(--panel);color:var(--ink);font-size:13px;margin-bottom:10px}
+.wk{margin-bottom:6px}
+.wk-t{width:100%;text-align:left;background:none;border:none;color:var(--ink);font-size:13px;font-weight:500;padding:7px 8px;cursor:pointer;border-radius:6px;line-height:1.35}
+.wk-t:hover{background:var(--code)}
+.wk-d{display:flex;flex-direction:column;gap:1px;margin:2px 0 4px 6px;padding-left:6px;border-left:2px solid var(--line)}
+.day-link{color:var(--soft);text-decoration:none;font-size:13px;padding:5px 8px;border-radius:6px;line-height:1.35}
+.day-link:hover{background:var(--code);color:var(--ink)}
+.day-link.active{background:var(--accent-bg);color:var(--accent)}
+.day-link.is-done::after{content:" ✓";color:var(--done)}
+.main{flex:1;min-width:0;padding:26px 34px 90px}
+.week-head{font-size:20px;font-weight:500;margin:34px 0 4px;padding-bottom:8px;border-bottom:2px solid var(--line)}
+.week-head:first-child{margin-top:6px}
+.day{scroll-margin-top:64px;padding:18px 0 8px;border-bottom:1px solid var(--line)}
+.day-top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.day h2{font-size:17px;font-weight:500;margin:0 0 6px}
+.done{font-size:12px;color:var(--soft);display:flex;align-items:center;gap:6px;cursor:pointer;white-space:nowrap}
+.day.completed{opacity:.62}
+.intro{padding:22px 34px 4px;max-width:1180px;margin:0 auto;color:var(--soft)}
+.intro blockquote{margin:12px 0}
+.main h1{font-size:19px;font-weight:500;margin:22px 0 8px}
+.main h2{font-size:16px;font-weight:500;margin:20px 0 6px}
+.main h3{font-size:15px;font-weight:500;margin:16px 0 6px}
+.main p{margin:10px 0}
+.main ul,.main ol{margin:10px 0;padding-left:22px}
+.main li{margin:4px 0}
+.main a{color:var(--accent)}
+code{background:var(--code);padding:2px 5px;border-radius:4px;font:13px/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+pre{background:var(--code);padding:13px 15px;border-radius:9px;overflow-x:auto;border:1px solid var(--line)}
+pre code{background:none;padding:0;font-size:12.5px}
+blockquote{border-left:3px solid var(--line);margin:12px 0;padding:2px 14px;color:var(--soft)}
+table{border-collapse:collapse;width:100%;margin:12px 0;font-size:14px;display:block;overflow-x:auto}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
+th{background:var(--code);font-weight:500}
+strong{font-weight:500}
+.backtop{position:fixed;right:18px;bottom:18px;background:var(--panel);border:1px solid var(--line);color:var(--ink);border-radius:8px;padding:9px 12px;font-size:13px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+@media(max-width:820px){
+ .menu-btn{display:block}
+ .side{position:fixed;left:0;top:0;height:100vh;z-index:30;background:var(--panel);transform:translateX(-105%);transition:transform .2s;box-shadow:0 0 30px rgba(0,0,0,.25);padding-top:16px}
+ .side.open{transform:translateX(0)}
+ .main{padding:20px 18px 90px}.intro{padding:18px}
+}
+.qlink{margin:10px 0 4px;padding:8px 12px;background:#fdf3ee;border-left:3px solid #c15f3c;
+  border-radius:6px;font-size:.85rem}
+.qlink a{color:#a3492a;font-weight:600;text-decoration:none}
+.qlink a:hover{text-decoration:underline}
+.addendum{margin-top:14px;padding:14px 16px;background:#f4f7f4;border:1px solid #dde5dd;border-radius:8px}
+.addendum h3{margin:0 0 8px;font-size:.95rem;color:#3f7d5c}
+.addendum p:last-child{margin-bottom:0}
+.warnbox{margin-top:14px;padding:14px 16px;background:#fdf6ec;border:1px solid #ecdcc0;border-radius:8px}
+.warnbox h3{margin:0 0 8px;font-size:.95rem;color:#9a6b1f}
+.rev-stamp{font-size:.72rem;color:#8a847c;margin-left:6px}
+.rev-stamp.due{color:#9a6b1f;font-weight:600}
+.rev-btn{font-size:.7rem;background:none;border:1px solid var(--line,#e8e3db);color:#8a847c;
+  padding:2px 7px;border-radius:5px;cursor:pointer;margin-left:4px;font-family:inherit}
+.rev-btn:hover{border-color:#3f7d5c;color:#3f7d5c}
+.duebtn{display:block;width:100%;margin:0 0 8px;padding:7px 10px;font-size:.78rem;font-family:inherit;
+  background:none;border:1px dashed #d8d2c8;color:#8a847c;border-radius:6px;cursor:pointer;text-align:left}
+.duebtn:hover{border-color:#9a6b1f;color:#9a6b1f}
+.duebtn.on{background:#fdf6ec;border-style:solid;border-color:#9a6b1f;color:#9a6b1f;font-weight:600}
+.day-link.is-due::after{content:' •';color:#9a6b1f;font-weight:700}
+</style></head>
+<body>
+<div class="topbar">
+ <button class="menu-btn" id="menuBtn" aria-label="Toggle menu">☰ Days</button>
+ <h1>Claude Certified Architect — Foundations · Source Reader</h1>
+ <div class="prog-wrap"><span id="progTxt">0 / 22 days</span><div class="prog"><div class="prog-fill" id="progFill"></div></div></div>
+</div>
+<div class="intro"><h1>Claude Certified Architect — Foundations: Source Reader</h1>
+<p>The actual study material, sequenced to match the 4-week plan. Each day contains the real guide text to read plus the official documentation link(s) for that topic. No searching required — read top to bottom, one day at a time.</p>
+<blockquote>
+<p>Sources: written against Anthropic's official CCAR-F exam guide and the official documentation (linked per day — always the primary source). Structure and topic sequencing were inspired by the excellent community guide <a href="https://github.com/paullarionov/claude-certified-architect" target="_blank" rel="noopener">paullarionov/claude-certified-architect</a>. Independent study material; not affiliated with or endorsed by Anthropic.</p>
+</blockquote>
+<hr /><p style="font-size:13px;color:var(--faint)">Tip: use the sidebar to jump to any day, the search box to filter, and “mark done” to track progress. Progress is saved automatically on this device.</p>
+<p style="font-size:13px;color:var(--soft);margin-top:14px;padding-top:12px;border-top:1px solid var(--line)">Created by <strong>Alonso Aguilar</strong> · <a href="https://www.linkedin.com/in/alonso-aguilar-araya/" target="_blank" rel="noopener">LinkedIn</a></p></div>
+<div class="layout">
+ <nav class="side" id="side">
+  <input class="search" id="search" placeholder="Filter days…" aria-label="Filter days">
+<button type="button" class="duebtn" id="dueBtn">Due for review</button>
+  <div class="wk"><button class="wk-t" data-t="week-1-domain-1-agent-architecture-orchestration-27">WEEK 1 — Domain 1: Agent Architecture &amp; Orchestration (27%)</button><div class="wk-d" id="d-week-1-domain-1-agent-architecture-orchestration-27">
+<a href="#day-1-mon-api-fundamentals" class="day-link" data-id="day-1-mon-api-fundamentals">Day 1 (Mon) — API fundamentals</a>
+<a href="#day-2-tue-the-agentic-loop-agentdefinition" class="day-link" data-id="day-2-tue-the-agentic-loop-agentdefinition">Day 2 (Tue) — The agentic loop &amp; AgentDefinition</a>
+<a href="#day-3-wed-hub-and-spoke-coordinator-subagents-the-task-tool" class="day-link" data-id="day-3-wed-hub-and-spoke-coordinator-subagents-the-task-tool">Day 3 (Wed) — Hub-and-spoke: coordinator &amp; subagents; the Task tool</a>
+<a href="#day-4-thu-hooks-pretooluse-posttooluse" class="day-link" data-id="day-4-thu-hooks-pretooluse-posttooluse">Day 4 (Thu) — Hooks (PreToolUse / PostToolUse)</a>
+<a href="#day-5-fri-task-decomposition-strategies" class="day-link" data-id="day-5-fri-task-decomposition-strategies">Day 5 (Fri) — Task decomposition strategies</a>
+<a href="#day-6-sat-sessions-resume-fork-session" class="day-link" data-id="day-6-sat-sessions-resume-fork-session">Day 6 (Sat) — Sessions: resume &amp; fork_session</a>
+<a href="#day-7-sun-checkpoint" class="day-link" data-id="day-7-sun-checkpoint">Day 7 (Sun) — Checkpoint</a>
+</div></div>
+<div class="wk"><button class="wk-t" data-t="week-2-domains-2-3-tools-mcp-18-claude-code-20">WEEK 2 — Domains 2 &amp; 3: Tools/MCP (18%) + Claude Code (20%)</button><div class="wk-d" id="d-week-2-domains-2-3-tools-mcp-18-claude-code-20">
+<a href="#day-8-mon-tool-definitions-tool-choice" class="day-link" data-id="day-8-mon-tool-definitions-tool-choice">Day 8 (Mon) — Tool definitions &amp; tool_choice</a>
+<a href="#day-9-tue-mcp-concepts-servers-configuration" class="day-link" data-id="day-9-tue-mcp-concepts-servers-configuration">Day 9 (Tue) — MCP concepts, servers &amp; configuration</a>
+<a href="#day-10-wed-mcp-error-handling-the-iserror-flag" class="day-link" data-id="day-10-wed-mcp-error-handling-the-iserror-flag">Day 10 (Wed) — MCP error handling: the isError flag</a>
+<a href="#day-11-thu-claude-md-hierarchy-path-imports" class="day-link" data-id="day-11-thu-claude-md-hierarchy-path-imports">Day 11 (Thu) — CLAUDE.md hierarchy &amp; @path imports</a>
+<a href="#day-12-fri-rules-slash-commands-skills" class="day-link" data-id="day-12-fri-rules-slash-commands-skills">Day 12 (Fri) — Rules, slash commands &amp; skills</a>
+<a href="#day-13-sat-planning-mode-compact-memory-built-in-tools" class="day-link" data-id="day-13-sat-planning-mode-compact-memory-built-in-tools">Day 13 (Sat) — Planning mode, /compact, /memory, built-in tools</a>
+<a href="#day-14-sun-claude-code-in-ci-cd" class="day-link" data-id="day-14-sun-claude-code-in-ci-cd">Day 14 (Sun) — Claude Code in CI/CD</a>
+</div></div>
+<div class="wk"><button class="wk-t" data-t="week-3-domains-4-5-prompt-eng-structured-output-20-context-reliability-15">WEEK 3 — Domains 4 &amp; 5: Prompt Eng/Structured Output (20%) + Context/Reliability (15%)</button><div class="wk-d" id="d-week-3-domains-4-5-prompt-eng-structured-output-20-context-reliability-15">
+<a href="#day-15-mon-json-schema-structured-output-syntax-vs-semantic-errors" class="day-link" data-id="day-15-mon-json-schema-structured-output-syntax-vs-semantic-errors">Day 15 (Mon) — JSON-schema structured output; syntax vs semantic errors</a>
+<a href="#day-16-tue-few-shot-explicit-criteria-chaining-the-interview-pattern" class="day-link" data-id="day-16-tue-few-shot-explicit-criteria-chaining-the-interview-pattern">Day 16 (Tue) — Few-shot, explicit criteria, chaining, the Interview pattern</a>
+<a href="#day-17-wed-validation-retry-with-feedback-pydantic-self-correction" class="day-link" data-id="day-17-wed-validation-retry-with-feedback-pydantic-self-correction">Day 17 (Wed) — Validation + retry-with-feedback; Pydantic; self-correction</a>
+<a href="#day-18-thu-message-batches-api" class="day-link" data-id="day-18-thu-message-batches-api">Day 18 (Thu) — Message Batches API</a>
+<a href="#day-19-fri-escalation-human-in-the-loop" class="day-link" data-id="day-19-fri-escalation-human-in-the-loop">Day 19 (Fri) — Escalation &amp; human-in-the-loop</a>
+<a href="#day-20-sat-error-handling-context-management" class="day-link" data-id="day-20-sat-error-handling-context-management">Day 20 (Sat) — Error handling + context management</a>
+<a href="#day-21-sun-preserving-provenance" class="day-link" data-id="day-21-sun-preserving-provenance">Day 21 (Sun) — Preserving provenance</a>
+</div></div>
+<div class="wk"><button class="wk-t" data-t="week-4-integration-full-practice-exam-readiness">WEEK 4 — Integration, Full Practice &amp; Exam Readiness</button><div class="wk-d" id="d-week-4-integration-full-practice-exam-readiness">
+<a href="#days-22-28-practice-remediation" class="day-link" data-id="days-22-28-practice-remediation">Days 22-28 — Practice &amp; remediation</a>
+<a href="#day-22-baseline-simulation" class="day-link" data-id="day-22-baseline-simulation">Day 22 — Baseline simulation</a>
+<a href="#day-23-work-the-review-plan" class="day-link" data-id="day-23-work-the-review-plan">Day 23 — Work the review plan</a>
+<a href="#day-24-weakest-domains-weighted" class="day-link" data-id="day-24-weakest-domains-weighted">Day 24 — Weakest domains, weighted</a>
+<a href="#day-25-second-simulation" class="day-link" data-id="day-25-second-simulation">Day 25 — Second simulation</a>
+<a href="#day-26-build-one-artifact-per-weak-domain" class="day-link" data-id="day-26-build-one-artifact-per-weak-domain">Day 26 — Build one artifact per weak domain</a>
+<a href="#day-27-drills-and-consolidation" class="day-link" data-id="day-27-drills-and-consolidation">Day 27 — Drills and consolidation</a>
+<a href="#day-28-final-run-and-logistics" class="day-link" data-id="day-28-final-run-and-logistics">Day 28 — Final run and logistics</a>
+<a href="#week-4-appendix-practice-question-banks" class="day-link" data-id="week-4-appendix-practice-question-banks">Week 4 appendix — Practice question banks</a>
+</div></div>
+ </nav>
+ <main class="main"><h1 class="week-head" id="week-1-domain-1-agent-architecture-orchestration-27">WEEK 1 — Domain 1: Agent Architecture &amp; Orchestration (27%)</h1>
+<section class="day" id="day-1-mon-api-fundamentals"><div class="day-top"><h2>Day 1 (Mon) — API fundamentals</h2><label class="done"><input type="checkbox" class="done-cb" data-id="day-1-mon-api-fundamentals"> mark done</label></div>
+<div class="qlink">2 practice questions cover this day — <a href="practice-exam.html" target="_blank" rel="noopener">open the practice exam</a></div><p><strong>Focus while reading:</strong> Read for the request/response shape, message roles, stop_reason, system prompt, and the context-window failure modes. These underpin every agent question.</p>
+<p><strong>Official docs for this topic:</strong></p>
+<ul>
+<li><a href="https://platform.claude.com/docs/en/api/messages">Claude API — Messages</a></li>
+</ul>
+<hr />
+<h1>Chapter 1: Claude API — Fundamentals of Model Interaction</h1>
+<div class="warnbox">
+<h3>Time-boxed path through this chapter</h3>
+<p>This is the longest section in the guide, but no exam domain is dedicated to raw API mechanics &mdash; the appendix lists the Claude API only as supporting knowledge behind Domains 1 and 4. If you are short on time, read in this order and stop when the clock runs out:</p>
+<ol>
+<li><strong><a href="#sec-1-3">1.3 stop_reason</a></strong> &mdash; essential. <code>tool_use</code> vs <code>end_turn</code> is the control signal for every agentic-loop question, and parsing text instead is a named anti-pattern.</li>
+<li><strong><a href="#sec-1-5">1.5 Context Window</a></strong> &mdash; essential. Underpins all of Domain 5: compaction, trimming tool results, and the lost-in-the-middle effect.</li>
+<li><strong><a href="#sec-1-1">1.1 API Request Structure</a></strong> &mdash; important for one reason: the API is <em>stateless</em>, so conversation history and tool results must be resent on every call. That single fact is testable; the rest of the request shape is not.</li>
+<li><strong><a href="#sec-1-4">1.4 System Prompt</a></strong> &mdash; skim. Know that stable, request-invariant guidance belongs here and per-request content belongs in the user message.</li>
+<li><strong><a href="#sec-1-2">1.2 Message Roles</a></strong> &mdash; skim. Background only.</li>
+</ol>
+<p>Explicitly <strong>out of scope</strong> per the official guide, so do not spend time here: authentication and billing, rate limits and pricing, token-counting algorithms, streaming implementation, and prompt-caching internals beyond knowing the feature exists.</p>
+</div>
+<blockquote>
+<p>Documentation: <a href="https://platform.claude.com/docs/en/api/messages">Messages API</a> | <a href="https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/overview">Prompt Engineering</a></p>
+</blockquote>
+<h2 id="sec-1-1">1.1 API Request Structure</h2>
+<p>The Claude API follows a request–response model. Each request to the Claude Messages API includes:</p>
+<pre><code class="language-json">{
+  &quot;model&quot;: &quot;claude-sonnet-5&quot;,
+  &quot;max_tokens&quot;: 1024,
+  &quot;system&quot;: &quot;You are a helpful assistant.&quot;,
+  &quot;messages&quot;: [
+    {&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;Hi!&quot;},
+    {&quot;role&quot;: &quot;assistant&quot;, &quot;content&quot;: &quot;Hello!&quot;},
+    {&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;How are you?&quot;}
+  ],
+  &quot;tools&quot;: [...],
+  &quot;tool_choice&quot;: {&quot;type&quot;: &quot;auto&quot;}
+}
+</code></pre>
+<p><strong>Key fields:</strong>
+- <code>model</code> — model selection (<code>claude-opus-5</code>, <code>claude-sonnet-5</code>, <code>claude-haiku-4-5</code>)
+- <code>max_tokens</code> — maximum number of tokens in the response
+- <code>system</code> — the system prompt (defines model behavior)
+- <code>messages</code> — conversation history (<strong>you must send the full history</strong> to maintain coherence)
+- <code>tools</code> — definitions of available tools
+- <code>tool_choice</code> — tool selection strategy</p>
+<h2 id="sec-1-2">1.2 Message Roles</h2>
+<p>The <code>messages</code> array uses two conversational roles plus one instructional role:
+- <code>user</code> — user messages, including tool results (sent as a <code>tool_result</code> content block within a <code>user</code>-role message, not as a separate <code>tool</code> role)
+- <code>assistant</code> — model responses (included when sending history), including tool use requests (<code>tool_use</code> content blocks)
+- <code>system</code> — can be set via the top-level <code>system</code> field (applies from the first turn) or inline in <code>messages</code> as <code>{"role": "system", ...}</code> (applies from that point onward, subject to placement rules — see below)</p>
+<p>Tool results are not sent as a role: <code>"tool"</code> message. They're sent as a <code>user</code>-role message whose content includes a <code>tool_result</code> content block:</p>
+<pre><code class="language-json">{
+  &quot;role&quot;: &quot;user&quot;,
+  &quot;content&quot;: [
+    {
+      &quot;type&quot;: &quot;tool_result&quot;,
+      &quot;tool_use_id&quot;: &quot;toolu_01...&quot;,
+      &quot;content&quot;: &quot;...&quot;
+    }
+  ]
+}
+</code></pre>
+<p><code>system</code> can also appear as a role directly in the <code>messages</code> array, not just via the top-level <code>system</code> parameter. This is meant for adding instructions mid-conversation without invalidating the cached prefix from the top-level <code>system</code> field. It has specific placement rules:
+- Must immediately follow a <code>user</code> turn (including one with <code>tool_result</code> blocks) or an <code>assistant</code> turn ending in server tool use.
+- Must precede an <code>assistant</code> turn or end the array.
+- Cannot sit between a <code>tool_use</code> block and its <code>tool_result</code>—doing so returns a 400 error.
+- Later <code>system</code> messages (including mid-conversation ones) take precedence over earlier ones and over the top-level <code>system</code> field for turns that follow.</p>
+<p><strong>Critically important:</strong> on every API request you must send the <strong>full conversation history</strong>. The model does not persist state between requests—each call is independent.</p>
+<h2 id="sec-1-3">1.3 The <code>stop_reason</code> Field in the Response</h2>
+<p>The Claude API response includes <code>stop_reason</code>, which indicates why the model stopped generating:</p>
+<table>
+<thead>
+<tr>
+<th>Value</th>
+<th>Description</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>"end_turn"</code></td>
+<td>The model finished its response</td>
+<td>Show the result to the user</td>
+</tr>
+<tr>
+<td><code>"tool_use"</code></td>
+<td>The model wants to call a tool</td>
+<td>Execute the tool and return the result</td>
+</tr>
+<tr>
+<td><code>"max_tokens"</code></td>
+<td>Token limit reached</td>
+<td>The response is truncated; you may need to increase the limit</td>
+</tr>
+<tr>
+<td><code>"stop_sequence"</code></td>
+<td>A stop sequence was encountered</td>
+<td>Handle based on your application logic</td>
+</tr>
+</tbody>
+</table>
+<p>For agentic systems, <code>"tool_use"</code> and <code>"end_turn"</code> are the most important—they control the agent loop.</p>
+<p><em>Current-docs note:</em> the API also documents <code>"pause_turn"</code> (a long-running server-tool turn paused — send the response back as-is to continue), <code>"refusal"</code>, and <code>"model_context_window_exceeded"</code>. The exam guide focuses on the four in the table, but do not be surprised by <code>pause_turn</code> in newer material. See the official <a href="https://platform.claude.com/docs/en/build-with-claude/handling-stop-reasons" target="_blank" rel="noopener">handling stop reasons</a> page.</p>
+<h2 id="sec-1-4">1.4 System Prompt</h2>
+<p>The system prompt is a special instruction that defines context and behavioral rules. It:
+- Is not part of the <code>messages</code> array; it is passed separately in the <code>system</code> field
+- Has priority over user messages
+- Is loaded once and applies throughout the conversation
+- Is used to define role, constraints, and output format</p>
+<p><strong>Important for the exam:</strong> system prompt wording can create unintended tool associations. For example, an instruction like “always verify the customer” can cause the model to overuse <code>get_customer</code>, even when it is unnecessary.</p>
+<h2 id="sec-1-5">1.5 Context Window</h2>
+<p>The context window is the total amount of text (in tokens) the model can process at once. It includes:
+- The system prompt
+- The full message history
+- Tool definitions
+- Tool results</p>
+<p><strong>Key context-window problems:</strong></p>
+<ol>
+<li>
+<p><strong>Lost-in-the-middle effect:</strong> models reliably process information at the start and end of a long input but can miss details in the middle. Mitigation: place key information near the beginning or end.</p>
+</li>
+<li>
+<p><strong>Accumulation of tool results:</strong> every tool call adds output to the context. If a tool returns 40+ fields but only 5 matter, then most of the context is wasted.</p>
+</li>
+<li>
+<p><strong>Progressive summarization:</strong> when compressing history, numeric values, percentages, and dates often get lost and become vague (“about”, “roughly”, “a few”).</p>
+</li>
+</ol>
+<hr />
+<hr /></section>
+<section class="day" id="day-2-tue-the-agentic-loop-agentdefinition"><div class="day-top"><h2>Day 2 (Tue) — The agentic loop &amp; AgentDefinition</h2><label class="done"><input type="checkbox" class="done-cb" data-id="day-2-tue-the-agentic-loop-agentdefinition"> mark done</label></div>
+<div class="qlink">1 practice question cover this day — <a href="practice-exam.html" target="_blank" rel="noopener">open the practice exam</a></div><p><strong>Focus while reading:</strong> The single most important concept in Domain 1. Focus on why end_turn is the only reliable completion signal and the three loop anti-patterns.</p>
+<p><strong>Official docs for this topic:</strong></p>
+<ul>
+<li><a href="https://platform.claude.com/docs/en/agent-sdk/overview">Claude Agent SDK — Overview</a></li>
+</ul>
+<hr />
+<h1>Chapter 3: Claude Agent SDK — Building Agentic Systems</h1>
+<blockquote>
+<p>Documentation: <a href="https://platform.claude.com/docs/en/agent-sdk/overview">Agent SDK</a> | <a href="https://platform.claude.com/docs/en/agent-sdk/hooks">Hooks</a> | <a href="https://platform.claude.com/docs/en/agent-sdk/subagents">Subagents</a> | <a href="https://platform.claude.com/docs/en/agent-sdk/sessions">Sessions</a></p>
+</blockquote>
+<h2 id="sec-3-1">3.1 What is an Agentic Loop</h2>
+<p>The agentic loop is the core pattern for autonomous task execution. The model doesn't just answer—it performs a sequence of actions:</p>
+<pre><code>1. Send a request to Claude with tools
+2. Receive a response
+3. Check stop_reason:
+   - &quot;tool_use&quot; -&gt; execute the tool, append the result to history, go back to step 1
+   - &quot;end_turn&quot; -&gt; the task is complete, show the result to the user
+4. Repeat until completion
+</code></pre>
+<p><strong>This is a model-driven approach:</strong> Claude decides which tool to call next based on context and prior tool results. This differs from hard-coded decision trees where the action sequence is fixed.</p>
+<p><strong>Anti-patterns (avoid):</strong>
+- Parsing assistant text to detect completion (“Task completed”)
+- Using an arbitrary iteration limit (e.g., <code>max_iterations=5</code>) as the primary stop condition
+- Checking whether the assistant produced textual content as a completion signal</p>
+<p><strong>Correct approach:</strong> the only reliable completion signal is <code>stop_reason == "end_turn"</code>.</p>
+<h2 id="sec-3-2">3.2 <code>AgentDefinition</code> Configuration</h2>
+<p><code>AgentDefinition</code> is the agent configuration object in the Claude Agent SDK:</p>
+<pre><code class="language-python">agent = AgentDefinition(
+    name=&quot;customer_support&quot;,
+    description=&quot;Handles customer requests for returns and order issues&quot;,
+    system_prompt=&quot;You are a customer support agent...&quot;,
+    allowed_tools=[&quot;get_customer&quot;, &quot;lookup_order&quot;, &quot;process_refund&quot;, &quot;escalate_to_human&quot;],
+    # For a coordinator:
+    # allowed_tools=[&quot;Task&quot;, &quot;get_customer&quot;, ...]
+)
+</code></pre>
+<p><strong>Key parameters:</strong>
+- <code>name</code> / <code>description</code> — identification and description of the agent
+- <code>system_prompt</code> — system prompt with instructions
+- <code>allowed_tools</code> — list of allowed tools (principle of least privilege)</p>
+<hr /></section>
+<section class="day" id="day-3-wed-hub-and-spoke-coordinator-subagents-the-task-tool"><div class="day-top"><h2>Day 3 (Wed) — Hub-and-spoke: coordinator &amp; subagents; the Task tool</h2><label class="done"><input type="checkbox" class="done-cb" data-id="day-3-wed-hub-and-spoke-coordinator-subagents-the-task-tool"> mark done</label></div>
+<div class="qlink">3 practice questions cover this day — <a href="practice-exam.html" target="_blank" rel="noopener">open the practice exam</a></div><p><strong>Focus while reading:</strong> Focus on subagent context isolation (nothing is inherited) and that the coordinator must include Task in allowed_tools. Note parallel spawning.</p>
+<p><strong>Official docs for this topic:</strong></p>
+<ul>
+<li><a href="https://platform.claude.com/docs/en/agent-sdk/subagents">Claude Agent SDK — Subagents</a></li>
+</ul>
+<hr />
+<h2 id="sec-3-3">3.3 Hub-and-Spoke: Coordinator and Subagents</h2>
+<p>A multi-agent architecture is typically built as a hub-and-spoke topology:</p>
+<pre><code>         Coordinator
+        /     |      \
+   Subagent1  Subagent2  Subagent3
+    (search)   (analysis)   (synthesis)
+</code></pre>
+<p><strong>The coordinator is responsible for:</strong>
+- Decomposing the task into subtasks
+- Deciding which subagents are needed (dynamic selection)
+- Delegating work to subagents
+- Aggregating and validating results
+- Handling errors and retries
+- Communicating results to the user</p>
+<p><strong>Critical principle: subagents have isolated context.</strong>
+- Subagents do <strong>not</strong> automatically inherit the coordinator's conversation history
+- All required context must be <strong>explicitly passed</strong> in the subagent prompt
+- Subagents do not share memory across calls
+- All communication flows through the coordinator (for observability and error control)</p>
+<h2 id="sec-3-4">3.4 The <code>Task</code> Tool for Spawning Subagents</h2>
+<p>Subagents are spawned via the <code>Task</code> tool:</p>
+<pre><code class="language-python"># The coordinator's allowedTools must include &quot;Task&quot;
+coordinator_agent = AgentDefinition(
+    allowed_tools=[&quot;Task&quot;, &quot;get_customer&quot;]
+)
+</code></pre>
+<p><strong>Explicit context passing is mandatory:</strong></p>
+<pre><code># Bad: the subagent has no context
+Task: &quot;Analyze the document&quot;
+
+# Good: full context in the prompt
+Task: &quot;Analyze the following document.
+Document: [full document text]
+Prior search results: [web search results]
+Output format requirements: [schema]&quot;
+</code></pre>
+<p><strong>Parallel spawning:</strong> a coordinator can call multiple <code>Task</code>s in one response—subagents run in parallel:</p>
+<pre><code># One coordinator response contains:
+Task 1: &quot;Search for articles about X&quot;
+Task 2: &quot;Analyze document Y&quot;
+Task 3: &quot;Search for articles about Z&quot;
+# All three run concurrently
+</code></pre>
+<hr /></section>
+<section class="day" id="day-4-thu-hooks-pretooluse-posttooluse"><div class="day-top"><h2>Day 4 (Thu) — Hooks (PreToolUse / PostToolUse)</h2><label class="done"><input type="checkbox" class="done-cb" data-id="day-4-thu-hooks-pretooluse-posttooluse"> mark done</label></div>
+<div class="qlink">2 practice questions cover this day — <a href="practice-exam.html" target="_blank" rel="noopener">open the practice exam</a></div><p><strong>Focus while reading:</strong> The deterministic-vs-probabilistic rule. Know exactly which failures demand a hook (financial/legal/safety) rather than a prompt.</p>
+<p><strong>Official docs for this topic:</strong></p>
+<ul>
+<li><a href="https://platform.claude.com/docs/en/agent-sdk/hooks">Claude Agent SDK — Hooks</a></li>
+<li><a href="https://code.claude.com/docs/en/hooks">Claude Code — Hooks</a></li>
+</ul>
+<hr />
+<h2 id="sec-3-5">3.5 Hooks in the Agent SDK</h2>
+<p>Hooks allow interception and transformation at specific points in the agent lifecycle.</p>
+<p><strong>PostToolUse</strong> intercepts a tool result before it is provided to the model:</p>
+<pre><code class="language-python"># Example: normalize date formats from different MCP tools
+@hook(&quot;PostToolUse&quot;)
+def normalize_dates(tool_result):
+    # Convert Unix timestamp -&gt; ISO 8601
+    # Convert &quot;Mar 5, 2025&quot; -&gt; &quot;2025-03-05&quot;
+    return normalized_result
+</code></pre>
+<p><strong>Outgoing-call interception hook</strong> blocks actions that violate policy:</p>
+<pre><code class="language-python"># Example: block refunds above $500
+@hook(&quot;PreToolUse&quot;)
+def enforce_refund_limit(tool_call):
+    if tool_call.name == &quot;process_refund&quot; and tool_call.args.amount &gt; 500:
+        return redirect_to_escalation(tool_call)
+</code></pre>
+<p><strong>Key difference: hooks vs prompt instructions</strong></p>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Hooks</th>
+<th>Prompt instructions</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Guarantee</td>
+<td><strong>Deterministic</strong> (100%)</td>
+<td><strong>Probabilistic</strong> (&gt;90%, not 100%)</td>
+</tr>
+<tr>
+<td>When to use</td>
+<td>Critical business rules, financial operations, compliance</td>
+<td>General preferences, recommendations, formatting</td>
+</tr>
+<tr>
+<td>Example</td>
+<td>Block refunds &gt; $500</td>
+<td>“Try to solve before escalating”</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Rule:</strong> when failure has financial, legal, or safety consequences—use hooks, not prompts.</p>
+<div class="warnbox">
+<h3>The converse matters just as much (exam trap)</h3>
+<p>The rule above is correct but only half the test. Practice banks train a reflex that <em>hooks always win</em>, and the exam punishes it. Ask what kind of failure you are looking at:</p>
+<ul>
+<li><strong>A mandatory sequence is being skipped</strong> (verify identity before a refund) &rarr; <strong>programmatic enforcement</strong>. Prompts have a non-zero failure rate and the consequences are financial.</li>
+<li><strong>Judgment is miscalibrated</strong> (the agent escalates the wrong cases, writes unactionable review comments, flags too many false positives) &rarr; <strong>explicit criteria and few-shot examples</strong>. A hook cannot encode a judgment boundary, and forcing one usually breaks a legitimate case.</li>
+</ul>
+<p><strong>Proportionality principle:</strong> choose the least complex control that actually addresses the identified failure. Distractors on this exam are frequently over-engineered &mdash; a routing layer, a trained classifier, a second model instance &mdash; when a better tool description or a clearer prompt criterion fixes the real cause. If prompt optimization has not been tried yet, an ML pipeline is almost never the keyed answer.</p>
+</div>
+<hr /></section>
+<section class="day" id="day-5-fri-task-decomposition-strategies"><div class="day-top"><h2>Day 5 (Fri) — Task decomposition strategies</h2><label class="done"><input type="checkbox" class="done-cb" data-id="day-5-fri-task-decomposition-strategies"> mark done</label></div>
+<div class="qlink">5 practice questions cover this day — <a href="practice-exam.html" target="_blank" rel="noopener">open the practice exam</a></div><p><strong>Focus while reading:</strong> Fixed pipelines (prompt chaining) vs dynamic adaptive decomposition, and why single-pass multi-file review fails (attention dilution).</p>
+<p><strong>Official docs for this topic:</strong></p>
+<ul>
+<li><a href="https://github.com/anthropics/anthropic-cookbook">Anthropic Cookbook (code examples)</a></li>
+</ul>
+<hr />
+<h1>Chapter 8: Task Decomposition Strategies</h1>
+<h2 id="sec-8-1">8.1 Fixed Pipelines (Prompt Chaining)</h2>
+<p>Each step is defined in advance:</p>
+<pre><code>Document -&gt; Metadata extraction -&gt; Data extraction -&gt; Validation -&gt; Enrichment -&gt; Final output
+</code></pre>
+<p><strong>When to use:</strong>
+- The task structure is predictable (reviews always follow the same template)
+- All steps are known up front
+- You need stability and reproducibility</p>
+<h2 id="sec-8-2">8.2 Dynamic Adaptive Decomposition</h2>
+<p>Subtasks are generated based on intermediate results:</p>
+<pre><code>1. &quot;Add tests for a legacy codebase&quot;
+2. -&gt; First: map the structure (Glob, Grep)
+3. -&gt; Found: 3 modules with no tests, 2 with partial coverage
+4. -&gt; Prioritize: start with the payments module (high risk)
+5. -&gt; During work: discovered a dependency on an external API
+6. -&gt; Adapt: add a mock for the external API before writing tests
+</code></pre>
+<p><strong>When to use:</strong>
+- Open-ended investigative tasks
+- When the full scope is unknown up front
+- When each step depends on the results of the previous step</p>
+<h2 id="sec-8-3">8.3 Multi-pass Code Review</h2>
+<p>For pull requests with 10+ files:</p>
+<pre><code>Pass 1 (per-file): Analyze auth.ts -&gt; list local issues
+Pass 1 (per-file): Analyze database.ts -&gt; list local issues
+Pass 1 (per-file): Analyze routes.ts -&gt; list local issues
+...
+Pass 2 (integration): Analyze relationships between files
+  -&gt; Cross-file issues: inconsistent types, circular dependencies
+</code></pre>
+<p><strong>Why a single pass over 14 files is bad:</strong>
+- Attention dilution: deep analysis for some files, shallow for others
+- Inconsistent comments: a pattern is flagged in one file but approved in another
+- Missed bugs: obvious errors get skipped due to cognitive overload</p>
+<hr />
+<hr /></section>
+<section class="day" id="day-6-sat-sessions-resume-fork-session"><div class="day-top"><h2>Day 6 (Sat) — Sessions: resume &amp; fork_session</h2><label class="done"><input type="checkbox" class="done-cb" data-id="day-6-sat-sessions-resume-fork-session"> mark done</label></div>
+<div class="qlink">1 practice question cover this day — <a href="practice-exam.html" target="_blank" rel="noopener">open the practice exam</a></div><p><strong>Focus while reading:</strong> When to resume, when to fork, and when to start fresh (stale tool results / degraded context).</p>
+<p><strong>Official docs for this topic:</strong></p>
+<ul>
+<li><a href="https://platform.claude.com/docs/en/agent-sdk/sessions">Claude Agent SDK — Sessions</a></li>
+</ul>
+<hr />
+<h2 id="sec-5-10">5.10 <code>fork_session</code> and Session Management</h2>
+<p><strong><code>--resume &lt;session-name&gt;</code></strong> resumes a named session:</p>
+<pre><code class="language-bash">claude --resume investigation-auth-bug
+</code></pre>
+<ul>
+<li>Continues a prior conversation with saved context</li>
+<li>Useful for long investigations across multiple sessions</li>
+<li>Risk: if files changed since the prior session, tool results may be stale</li>
+</ul>
+<p><strong><code>fork_session</code></strong> creates an independent branch from shared context:</p>
+<pre><code>Codebase investigation
+         |
+    fork_session
+    /           \
+Approach A:      Approach B:
+Redux            Context API
+</code></pre>
+<ul>
+<li>Both forks inherit context up to the branch point</li>
+<li>Afterwards, they diverge independently</li>
+<li>Useful for comparing approaches or testing strategies</li>
+</ul>
+<p><strong>When to start a new session instead of resuming:</strong>
+- Tool results are stale (files changed)
+- A lot of time has passed and context has degraded
+- It is better to restart with "Here is a short summary of what we found: ..." than to resume with old tool data</p>
+<hr />
+<hr /></section>
+<section class="day" id="day-7-sun-checkpoint"><div class="day-top"><h2>Day 7 (Sun) — Checkpoint</h2><label class="done"><input type="checkbox" class="done-cb" data-id="day-7-sun-checkpoint"> mark done</label></div><p><strong>Focus while reading:</strong> No new reading. Run Deck 1 flashcards + Domain 1 questions in the practice quiz / baseline diagnostic. Re-read any section you miss.</p>
+<hr />
+<h2 id="sec-doclinks">A note on the documentation links</h2>
+<p>Every "Official docs for this topic" link in this guide points at <code>platform.claude.com</code> (API and Agent SDK) or <code>code.claude.com</code> (Claude Code). Those are the current homes; the older <code>docs.anthropic.com</code> paths still redirect, so older bookmarks keep working. Spot-checked and resolving as of this revision.</p>
+<p>Two things drift faster than this guide will: the Claude Code <strong>hooks</strong> reference now documents far more lifecycle events than the <code>PreToolUse</code>/<code>PostToolUse</code> pair the exam cares about, and handler types beyond shell commands. Read the official page for breadth if you are curious, but for the exam stay with what the exam guide names &mdash; extra events are not tested and are easy to over-study.</p>
+<hr />
+<h2 id="sec-logistics">Exam logistics — verify before you schedule</h2>
+<table>
+<thead><tr><th>Item</th><th>Current information</th></tr></thead>
+<tbody>
+<tr><td>Exam code</td><td><strong>CCAR-F</strong> on Pearson VUE. The older <strong>CCA-F</strong> code is from the original Skilljar/ProctorFree platform and still appears across third-party study material. Same content.</td></tr>
+<tr><td>Format</td><td>60 items, 120 minutes (about 135 minutes of seat time). Four scenarios drawn at random from a published set of six.</td></tr>
+<tr><td>Question types</td><td>Multiple choice <em>and</em> multiple response. The older exam guide describes one correct answer and three distractors; the current certification page also lists multiple-response items, so practise both.</td></tr>
+<tr><td>Scoring</td><td>Scaled 100&ndash;1,000, minimum 720. Scaled &mdash; so 720 is <strong>not</strong> the same as 72% correct, and no raw-score conversion or pass rate is published. Treat any site claiming an exact question count as invented.</td></tr>
+<tr><td>Retakes</td><td>14 days after a first failure, 30 after a second, 90 after a third. Four attempts per rolling 12 months.</td></tr>
+<tr><td>Validity</td><td>12 months from the award date.</td></tr>
+<tr><td>Access</td><td>Open to organisations in the Claude Partner Network. Register through the Partner Academy, then schedule via Pearson.</td></tr>
+</tbody>
+</table>
+<p><strong>Answering method for scenario items.</strong> Five steps, in order:</p>
+<ol>
+<li><strong>Name the required outcome.</strong> Deterministic compliance? Better tool selection? Fewer false positives? Recoverability?</li>
+<li><strong>Find the binding constraint.</strong> Words like <em>must</em>, <em>first</em>, <em>shared with the team</em>, <em>without interaction</em>, and <em>when policy is silent</em> usually decide the answer.</li>
+<li><strong>Name the failure mode.</strong> A wrong tool, stale context, ambiguous policy, invalid schema output and a transient outage each demand a different fix.</li>
+<li><strong>Choose the least complex option that solves <em>that</em> failure.</strong> Better descriptions often beat a new router; explicit criteria often beat a new classifier.</li>
+<li><strong>Test every distractor.</strong> State what it changes and why that does not satisfy the constraint. On multiple-response items, judge each option independently instead of stopping when one looks right.</li>
+</ol>
+<p><strong>Timing and guessing.</strong> Two minutes per question on average; at the 60-minute mark you want to be near question 30. Unanswered items are scored wrong and there is no guessing penalty, so never leave a blank &mdash; flag, move on, and reserve a final review window.</p>
+<hr /></section>
+<h1 class="week-head" id="week-2-domains-2-3-tools-mcp-18-claude-code-20">WEEK 2 — Domains 2 &amp; 3: Tools/MCP (18%) + Claude Code (20%)</h1>
+<section class="day" id="day-8-mon-tool-definitions-tool-choice"><div class="day-top"><h2>Day 8 (Mon) — Tool definitions &amp; tool_choice</h2><label class="done"><input type="checkbox" class="done-cb" data-id="day-8-mon-tool-definitions-tool-choice"> mark done</label></div>
+<div class="qlink">4 practice questions cover this day — <a href="practice-exam.html" target="_blank" rel="noopener">open the practice exam</a></div><p><strong>Focus while reading:</strong> The description is the primary selection mechanism. Learn the three tool_choice modes and the built-in-vs-MCP preference issue.</p>
+<p><strong>Official docs for this topic:</strong></p>
+<ul>
+<li><a href="https://platform.claude.com/docs/en/build-with-claude/tool-use">Claude API — Tool Use</a></li>
+</ul>
+<hr />
+<h1>Chapter 2: Tools and <code>tool_use</code></h1>
+<blockquote>
+<p>Documentation: <a href="https://platform.claude.com/docs/en/build-with-claude/tool-use">Tool Use</a></p>
+</blockquote>
+<h2 id="sec-2-1">2.1 What is <code>tool_use</code></h2>
+<p><code>tool_use</code> is a mechanism that allows Claude to call external functions. The model does not run code directly—it generates a structured tool call request; your code executes it and returns the result.</p>
+<h2 id="sec-2-2">2.2 Tool Definition</h2>
+<p>Each tool is defined using a JSON schema:</p>
+<pre><code class="language-json">{
+  &quot;name&quot;: &quot;get_customer&quot;,
+  &quot;description&quot;: &quot;Finds a customer by email or ID. Returns the customer profile, including name, email, order history, and account status. Use this tool BEFORE lookup_order to verify the customer's identity. Accepts an email (format: user@domain.com) or a numeric customer_id.&quot;,
+  &quot;input_schema&quot;: {
+    &quot;type&quot;: &quot;object&quot;,
+    &quot;properties&quot;: {
+      &quot;email&quot;: {&quot;type&quot;: &quot;string&quot;, &quot;description&quot;: &quot;Customer email&quot;},
+      &quot;customer_id&quot;: {&quot;type&quot;: &quot;integer&quot;, &quot;description&quot;: &quot;Numeric customer ID&quot;}
+    },
+    &quot;required&quot;: []
+  }
+}
+</code></pre>
+<p><strong>Critically important aspects of a tool description:</strong></p>
+<ol>
+<li>
+<p><strong>The description is the primary selection mechanism.</strong> An LLM chooses tools based on their descriptions. Minimal descriptions (“Retrieves customer information”) lead to mistakes when tools overlap.</p>
+</li>
+<li>
+<p><strong>Include in the description:</strong>
+   - What the tool does and returns
+   - Input formats and example values
+   - Edge cases and constraints
+   - When to use this tool vs similar alternatives</p>
+</li>
+<li>
+<p><strong>Avoid</strong> identical or overlapping descriptions across tools. If <code>analyze_content</code> and <code>analyze_document</code> have nearly identical descriptions, the model will confuse them.</p>
+</li>
+<li>
+<p><strong>Built-in tools vs MCP tools:</strong> agents may prefer built-in tools (Read, Grep) over MCP tools with similar functionality. To prevent this, strengthen MCP tool descriptions—highlight concrete advantages, unique data, or context that built-in tools cannot provide.</p>
+</li>
+</ol>
+<h2 id="sec-2-3">2.3 The <code>tool_choice</code> Parameter</h2>
+<p><code>tool_choice</code> controls how the model selects tools:</p>
+<table>
+<thead>
+<tr>
+<th>Value</th>
+<th>Behavior</th>
+<th>When to use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>{"type": "auto"}</code></td>
+<td>The model decides whether to call a tool or answer in text</td>
+<td>Default for most cases</td>
+</tr>
+<tr>
+<td><code>{"type": "any"}</code></td>
+<td>The model <strong>must</strong> call some tool</td>
+<td>When you need guaranteed structured output</td>
+</tr>
+<tr>
+<td><code>{"type": "tool", "name": "extract_metadata"}</code></td>
+<td>The model <strong>must</strong> call a specific tool</td>
+<td>When you need a forced first step / execution order</td>
+</tr>
+<tr>
+<td><code>{"type": "none"}</code></td>
+<td>The model must <strong>not</strong> call any tool — text response only</td>
+<td>When tools are defined in context but this turn must answer in prose (documented in the official <a href="https://platform.claude.com/docs/en/agents-and-tools/tool-use/implement-tool-use" target="_blank" rel="noopener">tool use docs</a>)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Important scenarios:</strong>
+- <code>tool_choice: "any"</code> + multiple extraction tools → the model picks the best one, but you still get structured output
+- Forced selection → when you must guarantee a specific first action (e.g., <code>extract_metadata</code> before enrichment)</p>
+<hr /></section>
+<section class="day" id="day-9-tue-mcp-concepts-servers-configuration"><div class="day-top"><h2>Day 9 (Tue) — MCP concepts, servers &amp; configuration</h2><label class="done"><input type="checkbox" class="done-cb" data-id="day-9-tue-mcp-concepts-servers-configuration"> mark done</label></div>
+<div class="qlink">3 practice questions cover this day — <a href="practice-exam.html" target="_blank" rel="noopener">open the practice exam</a></div><p><strong>Focus while reading:</strong> Tools vs Resources vs Prompts; .mcp.json (project/VCS) vs ~/.claude.json (personal); community vs custom servers.</p>
+<p><strong>Official docs for this topic:</strong></p>
+<ul>
+<li><a href="https://modelcontextprotocol.io/">Model Context Protocol</a></li>
+<li><a href="https://modelcontextprotocol.io/docs/concepts/servers">MCP — Servers</a></li>
+<li><a href="https://modelcontextprotocol.io/docs/concepts/resources">MCP — Resources</a></li>
+</ul>
+<hr />
+<h1>Chapter 4: Model Context Protocol (MCP)</h1>
+<blockquote>
+<p>Documentation: <a href="https://modelcontextprotocol.io/">MCP</a> | <a href="https://modelcontextprotocol.io/docs/concepts/tools">Tools</a> | <a href="https://modelcontextprotocol.io/docs/concepts/resources">Resources</a> | <a href="https://modelcontextprotocol.io/docs/concepts/servers">Servers</a></p>
+</blockquote>
+<h2 id="sec-4-1">4.1 What is MCP</h2>
+<p>The Model Context Protocol (MCP) is an open protocol for connecting external systems to Claude. MCP defines three primary resource types:</p>
+<ol>
+<li><strong>Tools</strong> — functions the agent can call to perform actions (CRUD operations, API calls, command execution)</li>
+<li><strong>Resources</strong> — data the agent can read for context (documentation, database schemas, content catalogs)</li>
+<li><strong>Prompts</strong> — predefined prompt templates for common tasks</li>
+</ol>
+<h2 id="sec-4-2">4.2 MCP Servers</h2>
+<p>An MCP server is a process that implements the MCP protocol and provides tools/resources. When you connect to an MCP server:
+- All tools are discovered automatically
+- Tools from all connected servers are available at once
+- Tool descriptions determine how the model will use them</p>
+<h2 id="sec-4-3">4.3 Configuring MCP Servers</h2>
+<p><strong>Project configuration (<code>.mcp.json</code>)</strong> — for team usage:</p>
+<pre><code class="language-json">{
+  &quot;mcpServers&quot;: {
+    &quot;github&quot;: {
+      &quot;command&quot;: &quot;npx&quot;,
+      &quot;args&quot;: [&quot;-y&quot;, &quot;@modelcontextprotocol/server-github&quot;],
+      &quot;env&quot;: {
+        &quot;GITHUB_TOKEN&quot;: &quot;${GITHUB_TOKEN}&quot;
+      }
+    },
+    &quot;jira&quot;: {
+      &quot;command&quot;: &quot;npx&quot;,
+      &quot;args&quot;: [&quot;-y&quot;, &quot;mcp-server-jira&quot;],
+      &quot;env&quot;: {
+        &quot;JIRA_TOKEN&quot;: &quot;${JIRA_TOKEN}&quot;
+      }
+    }
+  }
+}
+</code></pre>
+<p><strong>Key points:</strong>
+- <code>.mcp.json</code> is stored at the project root and managed in version control
+- Environment variables (<code>${GITHUB_TOKEN}</code>) are used for secrets—tokens themselves are not committed
+- Available to all project contributors</p>
+<p><strong>User configuration (<code>~/.claude.json</code>)</strong> — for personal/experimental servers:
+- Stored in the user's home directory
+- Not shared via version control
+- Suitable for personal experiments and testing</p>
+<p><strong>Choosing servers:</strong>
+- For standard integrations (Jira, GitHub, Slack), prefer existing community MCP servers
+- Build your own servers only for unique, team-specific workflows</p>
+<h2 id="sec-4-5">4.5 MCP Resources</h2>
+<p>Resources are data that an agent can request to get context without taking actions:</p>
+<ul>
+<li>Content catalogs (e.g., a list of all project tasks, hierarchical navigation)</li>
+<li>Database schemas (understanding data structure)</li>
+<li>Documentation (API references, internal guides)</li>
+<li>Issue/task summaries</li>
+</ul>
+<p><strong>Resource advantage:</strong> the agent does not need exploratory tool calls to understand what data exists. A resource provides an immediate “map.”</p>
+<hr />
+<hr /></section>
+<section class="day" id="day-10-wed-mcp-error-handling-the-iserror-flag"><div class="day-top"><h2>Day 10 (Wed) — MCP error handling: the isError flag</h2><label class="done"><input type="checkbox" class="done-cb" data-id="day-10-wed-mcp-error-handling-the-iserror-flag"> mark done</label></div>
+<div class="qlink">1 practice question cover this day — <a href="practice-exam.html" target="_blank" rel="noopener">open the practice exam</a></div><p><strong>Focus while reading:</strong> Structured error (category, isRetryable, message, query, partial results) vs generic 'operation failed'.</p>
+<p><strong>Official docs for this topic:</strong></p>
+<ul>
+<li><a href="https://modelcontextprotocol.io/docs/concepts/tools">MCP — Tools</a></li>
+<li><a href="https://code.claude.com/docs/en/mcp">Claude Code — MCP Integration</a></li>
+</ul>
+<hr />
+<h2 id="sec-4-4">4.4 The <code>isError</code> Flag in MCP</h2>
+<p>When an MCP tool encounters an error, it uses <code>isError: true</code> in the response. This signals to the agent that the call failed.</p>
+<p><strong>Structured error (good):</strong></p>
+<pre><code class="language-json">{
+  &quot;isError&quot;: true,
+  &quot;content&quot;: {
+    &quot;errorCategory&quot;: &quot;transient&quot;,
+    &quot;isRetryable&quot;: true,
+    &quot;message&quot;: &quot;The service is temporarily unavailable. Timeout while calling the orders API.&quot;,
+    &quot;attempted_query&quot;: &quot;order_id=12345&quot;,
+    &quot;partial_results&quot;: null
+  }
+}
+</code></pre>
+<p><strong>Generic error (anti-pattern):</strong></p>
+<pre><code class="language-json">{
+  &quot;isError&quot;: true,
+  &quot;content&quot;: &quot;Operation failed&quot;
+}
+</code></pre>
+<p>A generic error gives the agent no information for decision-making—should it retry, change the query, or escalate?</p>
+<hr /></section>
+<section class="day" id="day-11-thu-claude-md-hierarchy-path-imports"><div class="day-top"><h2>Day 11 (Thu) — CLAUDE.md hierarchy &amp; @path imports</h2><label class="done"><input type="checkbox" class="done-cb" data-id="day-11-thu-claude-md-hierarchy-path-imports"> mark done</label></div>
+<div class="qlink">2 practice questions cover this day — <a href="practice-exam.html" target="_blank" rel="noopener">open the practice exam</a></div><p><strong>Focus while reading:</strong> Three levels (user/project/directory) and the 'new teammate didn't get instructions' trap. @path rules: no space, relative-to-importer, depth 5.</p>
+<p><strong>Official docs for this topic:</strong></p>
+<ul>
+<li><a href="https://code.claude.com/docs/en/memory">Claude Code — CLAUDE.md and Memory</a></li>
+</ul>
+<hr />
+<h1>Chapter 5: Claude Code — Configuration and Workflows</h1>
+<blockquote>
+<p>Documentation: <a href="https://code.claude.com/docs/en/overview">Claude Code</a> | <a href="https://code.claude.com/docs/en/memory">Memory / CLAUDE.md</a> | <a href="https://code.claude.com/docs/en/skills">Skills</a> | <a href="https://code.claude.com/docs/en/mcp">MCP</a> | <a href="https://code.claude.com/docs/en/hooks">Hooks</a> | <a href="https://code.claude.com/docs/en/sub-agents">Sub-agents</a> | <a href="https://code.claude.com/docs/en/github-actions">GitHub Actions</a> | <a href="https://code.claude.com/docs/en/headless">Headless</a></p>
+</blockquote>
+<h2 id="sec-5-1">5.1 The CLAUDE.md Hierarchy</h2>
+<p>CLAUDE.md is the instruction file(s) for Claude Code. There is a three-level hierarchy:</p>
+<pre><code>1. User-level: ~/.claude/CLAUDE.md
+   - Applies only to that user
+   - NOT shared via VCS
+   - Personal preferences and working style
+
+2. Project-level: .claude/CLAUDE.md or a root CLAUDE.md
+   - Applies to all project contributors
+   - Managed via VCS
+   - Coding standards, testing standards, architectural decisions
+
+3. Directory-level: CLAUDE.md in subdirectories
+   - Applies when working with files in that directory
+   - Conventions specific to that part of the codebase
+</code></pre>
+<p><strong>Common mistake:</strong> a new team member does not receive project instructions because they were placed in <code>~/.claude/CLAUDE.md</code> (user-level) instead of <code>.claude/CLAUDE.md</code> (project-level).</p>
+<h2 id="sec-5-2">5.2 <code>@path</code> Syntax (File Imports)</h2>
+<p>CLAUDE.md can reference external files using <code>@path</code>, making configuration modular:</p>
+<pre><code class="language-markdown"># Project CLAUDE.md
+
+Coding standards are described in @./standards/coding-style.md
+Test requirements are in @./standards/testing-requirements.md
+Project overview is in @README.md and dependencies are in @package.json
+</code></pre>
+<p><strong>Rules for <code>@path</code>:</strong>
+- Use <code>@</code> immediately before the file path (no space)
+- Relative and absolute paths are supported
+- Relative paths are resolved relative to the file that contains the import
+- Maximum import nesting depth is <strong>four hops</strong> per current official docs (&ldquo;Imported files can recursively import other files, with a maximum depth of four hops&rdquo; — <a href="https://code.claude.com/docs/en/memory" target="_blank" rel="noopener">memory docs</a>). Older study materials say five; if the exam asks, prefer the official exam guide&rsquo;s wording, but know the docs now say four.</p>
+<p>This avoids duplication and lets each package include only relevant standards.</p>
+<hr /></section>
+<section class="day" id="day-12-fri-rules-slash-commands-skills"><div class="day-top"><h2>Day 12 (Fri) — Rules, slash commands &amp; skills</h2><label class="done"><input type="checkbox" class="done-cb" data-id="day-12-fri-rules-slash-commands-skills"> mark done</label></div>
+<div class="qlink">3 practice questions cover this day — <a href="practice-exam.html" target="_blank" rel="noopener">open the practice exam</a></div><p><strong>Focus while reading:</strong> .claude/rules/ with paths globs vs directory CLAUDE.md; commands vs skills; frontmatter context: fork, allowed-tools, argument-hint.</p>
+<p><strong>Official docs for this topic:</strong></p>
+<ul>
+<li><a href="https://code.claude.com/docs/en/skills">Claude Code — Skills (incl. slash commands)</a></li>
+</ul>
+<hr />
+<h2 id="sec-5-3">5.3 The <code>.claude/rules/</code> Directory</h2>
+<p><code>.claude/rules/</code> is an alternative to a monolithic CLAUDE.md, used to organize rules by topic:</p>
+<pre><code>.claude/rules/
+  testing.md          -- testing conventions
+  api-conventions.md  -- API conventions
+  deployment.md       -- deployment rules
+  react-patterns.md   -- React patterns
+</code></pre>
+<p><strong>Key feature: YAML frontmatter with <code>paths</code> for conditional loading:</strong></p>
+<pre><code class="language-yaml">---
+paths: [&quot;src/api/**/*&quot;]
+---
+
+For API files, use async/await with explicit error handling.
+Each endpoint must return a standard response wrapper.
+</code></pre>
+<pre><code class="language-yaml">---
+paths: [&quot;**/*.test.tsx&quot;, &quot;**/*.test.ts&quot;]
+---
+
+Tests must use describe/it blocks.
+Use data factories instead of hardcoding.
+Do not mock the database—use a test database.
+</code></pre>
+<p><strong>How it works:</strong>
+- A rule is loaded <strong>only</strong> when Claude Code edits a file matching the <code>paths</code> pattern
+- This saves context and tokens—irrelevant rules are not loaded
+- Glob patterns let you apply conventions by file type regardless of location (ideal for tests scattered across the codebase)</p>
+<p><strong>When to use <code>.claude/rules/</code> with <code>paths</code> vs directory-level CLAUDE.md:</strong>
+- <code>.claude/rules/</code> with <code>paths</code> — when conventions apply to files spread across many directories (tests, migrations)
+- Directory-level CLAUDE.md — when conventions are tied to a specific directory and are not needed elsewhere</p>
+<h2 id="sec-5-4">5.4 Custom Slash Commands and Skills</h2>
+<blockquote>
+<p><strong>Note:</strong> in the current Claude Code version, custom commands (<code>.claude/commands/</code>) are unified with skills (<code>.claude/skills/</code>). Both formats create <code>/name</code> commands. The exam guide references <code>.claude/commands/</code>—that format is still supported.</p>
+</blockquote>
+<p>Slash commands are reusable prompt templates invoked via <code>/name</code>:</p>
+<p><strong><code>.claude/commands/</code> format (legacy, supported):</strong></p>
+<pre><code>.claude/commands/
+  review.md        -- /review -- standard code review
+  test-gen.md      -- /test-gen -- test generation
+</code></pre>
+<p><strong><code>.claude/skills/</code> format (current):</strong></p>
+<pre><code>.claude/skills/
+  review/SKILL.md  -- /review -- with frontmatter configuration
+  test-gen/SKILL.md
+</code></pre>
+<p><strong>Project commands</strong> (<code>.claude/commands/</code> or <code>.claude/skills/</code>):
+- Stored in VCS and available to everyone when cloning the repo
+- Ensure consistent workflows across the team</p>
+<p><strong>User commands</strong> (<code>~/.claude/commands/</code> or <code>~/.claude/skills/</code>):
+- Personal commands not shared via VCS
+- For individual workflows</p>
+<h2 id="sec-5-5">5.5 Skills — <code>.claude/skills/</code></h2>
+<p>Skills are advanced commands configured via SKILL.md frontmatter:</p>
+<pre><code class="language-yaml">---
+context: fork
+allowed-tools: [&quot;Read&quot;, &quot;Grep&quot;, &quot;Glob&quot;]
+argument-hint: &quot;Path to the directory to analyze&quot;
+---
+
+Analyze the code structure in the specified directory.
+Output a report on dependencies and architectural patterns.
+</code></pre>
+<p><strong>Frontmatter parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>context: fork</code></td>
+<td>Runs the skill in an isolated subagent. Verbose output does not pollute the main session</td>
+</tr>
+<tr>
+<td><code>allowed-tools</code></td>
+<td>Restricts which tools are available (security—e.g., the skill cannot delete files if not allowed)</td>
+</tr>
+<tr>
+<td><code>argument-hint</code></td>
+<td>Hint that asks for an argument when invoked without parameters</td>
+</tr>
+</tbody>
+</table>
+<p><strong>When to use a skill vs CLAUDE.md:</strong>
+- <strong>Skill</strong> — on-demand invocation for a specific task (review, analysis, generation)
+- <strong>CLAUDE.md</strong> — always-loaded general standards and conventions</p>
+<p><strong>Personal skills (<code>~/.claude/skills/</code>):</strong>
+- Create personal variants under different names so you don't affect teammates</p>
+<hr /></section>
+<section class="day" id="day-13-sat-planning-mode-compact-memory-built-in-tools"><div class="day-top"><h2>Day 13 (Sat) — Planning mode, /compact, /memory, built-in tools</h2><label class="done"><input type="checkbox" class="done-cb" data-id="day-13-sat-planning-mode-compact-memory-built-in-tools"> mark done</label></div>
+<div class="qlink">3 practice questions cover this day — <a href="practice-exam.html" target="_blank" rel="noopener">open the practice exam</a></div><p><strong>Focus while reading:</strong> Planning vs direct execution; the Explore subagent; and the six built-in tools with the incremental investigation strategy.</p>
+<p><strong>Official docs for this topic:</strong></p>
+<ul>
+<li><a href="https://code.claude.com/docs/en/overview">Claude Code — Documentation</a></li>
+<li><a href="https://code.claude.com/docs/en/sub-agents">Claude Code — Sub-agents</a></li>
+</ul>
+<hr />
+<h2 id="sec-5-6">5.6 Planning Mode vs Direct Execution</h2>
+<p><strong>Planning mode:</strong>
+- The model only investigates and plans; it does not make changes
+- Uses Read, Grep, Glob to explore the codebase
+- Produces an implementation plan that the user approves
+- Safe exploration with no side effects</p>
+<p><strong>When to use planning mode:</strong>
+- Large changes (dozens of files)
+- Multiple plausible approaches (microservices: how to define boundaries?)
+- Architectural decisions (which framework? what structure?)
+- Unfamiliar codebase (you must understand before changing)
+- Library migrations affecting 45+ files</p>
+<p><strong>When to use direct execution:</strong>
+- Single-file fixes with a clear stack trace
+- Adding one validation check
+- Well-understood, unambiguous changes</p>
+<p><strong>Combined approach:</strong>
+1. Planning mode for investigation and design
+2. User approves the plan
+3. Direct execution to implement the approved plan</p>
+<p><strong>Explore subagent</strong> — a specialized subagent for exploring the codebase:
+- Isolates verbose output from the main context
+- Returns only a summary
+- Prevents context-window exhaustion in multi-phase tasks</p>
+<h2 id="sec-5-7">5.7 The <code>/compact</code> Command</h2>
+<p><code>/compact</code> is a built-in command for compressing context:
+- Summarizes prior history to free up the context window
+- Used in long investigation sessions when the context fills up with verbose tool output
+- Risk: exact numeric values, dates, and specific details can be lost during summarization</p>
+<h2 id="sec-5-8">5.8 The <code>/memory</code> Command</h2>
+<p><code>/memory</code> is a built-in command for managing memory between sessions:
+- Opens the <code>CLAUDE.md</code> file for editing, allowing you to save notes, preferences, and context
+- Information persists across sessions and is automatically loaded on startup
+- Useful for storing project conventions, user preferences, frequently used commands, and current work context
+- Alternative to re-explaining the same instructions in every session</p>
+<h1>Chapter 13: Claude Code Built-in Tools</h1>
+<h2 id="sec-13-1">13.1 Tool Selection Reference</h2>
+<table>
+<thead>
+<tr>
+<th>Task</th>
+<th>Tool</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Find files by name/pattern</td>
+<td><strong>Glob</strong></td>
+<td><code>**/*.test.tsx</code>, <code>src/components/**/*.ts</code></td>
+</tr>
+<tr>
+<td>Search within files</td>
+<td><strong>Grep</strong></td>
+<td>Function name, error message, import</td>
+</tr>
+<tr>
+<td>Read a file in full</td>
+<td><strong>Read</strong></td>
+<td>Load a file for analysis</td>
+</tr>
+<tr>
+<td>Write a new file</td>
+<td><strong>Write</strong></td>
+<td>Create a file from scratch</td>
+</tr>
+<tr>
+<td>Edit an existing file precisely</td>
+<td><strong>Edit</strong></td>
+<td>Replace a specific snippet via unique text match</td>
+</tr>
+<tr>
+<td>Run a shell command</td>
+<td><strong>Bash</strong></td>
+<td>git, npm, run tests, build</td>
+</tr>
+</tbody>
+</table>
+<h2 id="sec-13-2">13.2 Incremental Investigation Strategy</h2>
+<p>Do not read all files at once. Build understanding incrementally:</p>
+<pre><code>1. Grep: find entry points (function definition, export)
+2. Read: read the found files
+3. Grep: find usages (import, calls)
+4. Read: read consumer files
+5. Repeat until you have a complete picture
+</code></pre>
+<h2 id="sec-13-3">13.3 Fallback: Read + Write Instead of Edit</h2>
+<p>When Edit fails due to a non-unique text match:
+1. Read — load the full file content
+2. Modify the content programmatically
+3. Write — write the updated version</p>
+<hr />
+<hr /></section>
+<section class="day" id="day-14-sun-claude-code-in-ci-cd"><div class="day-top"><h2>Day 14 (Sun) — Claude Code in CI/CD</h2><label class="done"><input type="checkbox" class="done-cb" data-id="day-14-sun-claude-code-in-ci-cd"> mark done</label></div>
+<div class="qlink">2 practice questions cover this day — <a href="practice-exam.html" target="_blank" rel="noopener">open the practice exam</a></div><p><strong>Focus while reading:</strong> The -p/--print flag, JSON output + schema, separate instance for review, and avoiding duplicate comments.</p>
+<p><strong>Official docs for this topic:</strong></p>
+<ul>
+<li><a href="https://code.claude.com/docs/en/github-actions">Claude Code — GitHub Actions CI/CD</a></li>
+<li><a href="https://code.claude.com/docs/en/gitlab-ci-cd">Claude Code — GitLab CI/CD</a></li>
+<li><a href="https://code.claude.com/docs/en/headless">Claude Code — Headless mode</a></li>
+</ul>
+<hr />
+<h2 id="sec-5-9">5.9 Claude Code CLI for CI/CD</h2>
+<p><strong>The <code>-p</code> (or <code>--print</code>) flag:</strong></p>
+<pre><code class="language-bash">claude -p &quot;Analyze this pull request for security issues&quot;
+</code></pre>
+<ul>
+<li>Non-interactive mode: processes the prompt, prints to stdout, exits</li>
+<li>Does not wait for user input</li>
+<li>The only correct way to run Claude in CI/CD pipelines</li>
+</ul>
+<p><strong>Structured output for CI:</strong></p>
+<pre><code class="language-bash">claude -p &quot;Review this PR&quot; --output-format json --json-schema '{&quot;type&quot;:&quot;object&quot;,...}'
+</code></pre>
+<ul>
+<li><code>--output-format json</code> — output in JSON</li>
+<li><code>--json-schema</code> — validate output against a schema</li>
+<li>The result can be parsed to automatically post inline PR comments</li>
+</ul>
+<p><strong>Session context isolation:</strong>
+The same Claude session that generated code is often less effective at reviewing it (the model retains its reasoning context and is less likely to challenge its own decisions). Use an independent instance for review.</p>
+<p><strong>Preventing duplicate comments:</strong>
+When re-reviewing after new commits, include prior review results in context and instruct Claude to report only new or unresolved issues.</p>
+<hr /></section>
+<h1 class="week-head" id="week-3-domains-4-5-prompt-eng-structured-output-20-context-reliability-15">WEEK 3 — Domains 4 &amp; 5: Prompt Eng/Structured Output (20%) + Context/Reliability (15%)</h1>
+<section class="day" id="day-15-mon-json-schema-structured-output-syntax-vs-semantic-errors"><div class="day-top"><h2>Day 15 (Mon) — JSON-schema structured output; syntax vs semantic errors</h2><label class="done"><input type="checkbox" class="done-cb" data-id="day-15-mon-json-schema-structured-output-syntax-vs-semantic-errors"> mark done</label></div>
+<div class="qlink">2 practice questions cover this day — <a href="practice-exam.html" target="_blank" rel="noopener">open the practice exam</a></div><p><strong>Focus while reading:</strong> Schemas fix syntax/structure, not semantics. Required-vs-nullable fabrication risk; enums with other/unclear.</p>
+<p><strong>Official docs for this topic:</strong></p>
+<ul>
+<li><a href="https://platform.claude.com/docs/en/build-with-claude/tool-use">Claude API — Tool Use</a></li>
+</ul>
+<hr />
+<h2 id="sec-2-4">2.4 JSON Schemas for Structured Output</h2>
+<p>Using <code>tool_use</code> with JSON schemas is the <strong>most reliable</strong> way to obtain structured output from Claude. It:
+- Guarantees syntactically valid JSON (no missing braces, no trailing commas)
+- Enforces the required structure (required fields are present)
+- Does <strong>not</strong> guarantee semantic correctness (values can still be wrong)</p>
+<p><strong>Schema design — key principles:</strong></p>
+<pre><code class="language-json">{
+  &quot;type&quot;: &quot;object&quot;,
+  &quot;properties&quot;: {
+    &quot;category&quot;: {
+      &quot;type&quot;: &quot;string&quot;,
+      &quot;enum&quot;: [&quot;bug&quot;, &quot;feature&quot;, &quot;docs&quot;, &quot;unclear&quot;, &quot;other&quot;]
+    },
+    &quot;category_detail&quot;: {
+      &quot;type&quot;: [&quot;string&quot;, &quot;null&quot;],
+      &quot;description&quot;: &quot;Details if category = 'other' or 'unclear'&quot;
+    },
+    &quot;severity&quot;: {
+      &quot;type&quot;: &quot;string&quot;,
+      &quot;enum&quot;: [&quot;critical&quot;, &quot;high&quot;, &quot;medium&quot;, &quot;low&quot;]
+    },
+    &quot;confidence&quot;: {
+      &quot;type&quot;: &quot;number&quot;,
+      &quot;minimum&quot;: 0,
+      &quot;maximum&quot;: 1
+    },
+    &quot;optional_field&quot;: {
+      &quot;type&quot;: [&quot;string&quot;, &quot;null&quot;],
+      &quot;description&quot;: &quot;Null if the information was not found in the source&quot;
+    }
+  },
+  &quot;required&quot;: [&quot;category&quot;, &quot;severity&quot;]
+}
+</code></pre>
+<p><strong>Schema design rules:</strong>
+1. <strong>Required vs optional:</strong> mark fields as required only if the information is always available. Required fields push the model to fabricate values when data is missing.
+2. <strong>Nullable fields:</strong> use <code>"type": ["string", "null"]</code> for information that may be absent. The model can return <code>null</code> instead of hallucinating.
+3. <strong>Enums with <code>"other"</code>:</strong> add <code>"other"</code> + a detail string to avoid losing data outside your predefined categories.
+4. <strong>Enum <code>"unclear"</code>:</strong> for cases where the model cannot confidently pick a category—honest <code>"unclear"</code> is better than a wrong category.</p>
+<h2 id="sec-2-5">2.5 Syntax vs Semantic Errors</h2>
+<table>
+<thead>
+<tr>
+<th>Error type</th>
+<th>Example</th>
+<th>Mitigation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Syntax</strong></td>
+<td>Invalid JSON, wrong field type</td>
+<td><code>tool_use</code> with a JSON schema (eliminates)</td>
+</tr>
+<tr>
+<td><strong>Semantic</strong></td>
+<td>Totals don't add up, value in wrong field, hallucination</td>
+<td>Validation checks, retry with feedback, self-correction</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<hr /></section>
+<section class="day" id="day-16-tue-few-shot-explicit-criteria-chaining-the-interview-pattern"><div class="day-top"><h2>Day 16 (Tue) — Few-shot, explicit criteria, chaining, the Interview pattern</h2><label class="done"><input type="checkbox" class="done-cb" data-id="day-16-tue-few-shot-explicit-criteria-chaining-the-interview-pattern"> mark done</label></div>
+<div class="qlink">4 practice questions cover this day — <a href="practice-exam.html" target="_blank" rel="noopener">open the practice exam</a></div><p><strong>Focus while reading:</strong> Why examples beat vague instructions; explicit include/exclude criteria; when to ask clarifying questions.</p>
+<p><strong>Official docs for this topic:</strong></p>
+<ul>
+<li><a href="https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/overview">Prompt Engineering Guide</a></li>
+</ul>
+<hr />
+<h1>Chapter 6: Prompt Engineering — Advanced Techniques</h1>
+<blockquote>
+<p>Documentation: <a href="https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/overview">Prompt Engineering</a> | <a href="https://github.com/anthropics/anthropic-cookbook">Anthropic Cookbook</a></p>
+</blockquote>
+<h2 id="sec-6-1">6.1 Few-shot Prompting</h2>
+<p>Few-shot prompting is the inclusion of 2–4 input/output examples in a prompt to demonstrate the expected behavior.</p>
+<p><strong>Why few-shot is more effective than textual descriptions:</strong>
+- A vague instruction like “be more precise” can be interpreted in many ways
+- An example unambiguously shows the expected format and decision logic
+- The model generalizes the pattern to new cases (it does not just repeat the examples)</p>
+<p><strong>Types of few-shot examples and when to use them:</strong></p>
+<ol>
+<li><strong>Examples for ambiguous scenarios:</strong></li>
+</ol>
+<pre><code>Request: &quot;My order is broken&quot;
+Action: Call get_customer -&gt; lookup_order -&gt; check status.
+Rationale: “broken” may mean a damaged item; you need order details.
+
+Request: &quot;Get me a manager&quot;
+Action: Immediately call escalate_to_human.
+Rationale: The customer explicitly requests a human. Do not attempt to solve autonomously.
+</code></pre>
+<ol start="2">
+<li><strong>Examples for output formatting:</strong></li>
+</ol>
+<pre><code>Finding example:
+{
+  &quot;location&quot;: &quot;src/auth/login.ts:42&quot;,
+  &quot;issue&quot;: &quot;SQL injection in the username parameter&quot;,
+  &quot;severity&quot;: &quot;critical&quot;,
+  &quot;suggested_fix&quot;: &quot;Use a parameterized query&quot;
+}
+</code></pre>
+<ol start="3">
+<li><strong>Examples to separate acceptable vs problematic code:</strong></li>
+</ol>
+<pre><code>// Acceptable (do not flag):
+const items = data.filter(x =&gt; x.active);
+
+// Problem (flag):
+const items = data.filter(x =&gt; x.active == true); // Use strict equality ===
+</code></pre>
+<ol start="4">
+<li><strong>Examples for extraction from different document formats:</strong></li>
+</ol>
+<pre><code>Document with inline citations:
+&quot;As shown in the study (Smith, 2023), the rate is 42%.&quot;
+-&gt; {&quot;value&quot;: &quot;42%&quot;, &quot;source&quot;: &quot;Smith, 2023&quot;, &quot;type&quot;: &quot;inline_citation&quot;}
+
+Document with bibliography references:
+&quot;The rate is 42%. [1]&quot;
+-&gt; {&quot;value&quot;: &quot;42%&quot;, &quot;source&quot;: &quot;reference_1&quot;, &quot;type&quot;: &quot;bibliography&quot;}
+</code></pre>
+<ol start="5">
+<li><strong>Examples for informal measurements:</strong></li>
+</ol>
+<pre><code>Text: &quot;about two handfuls of rice&quot;
+-&gt; {&quot;amount&quot;: &quot;~100g&quot;, &quot;original_text&quot;: &quot;two handfuls&quot;, &quot;precision&quot;: &quot;approximate&quot;}
+
+Text: &quot;a pinch of salt&quot;
+-&gt; {&quot;amount&quot;: &quot;~1g&quot;, &quot;original_text&quot;: &quot;a pinch&quot;, &quot;precision&quot;: &quot;approximate&quot;}
+</code></pre>
+<p>Few-shot is especially effective for extracting informal and non-standard measurement units that are too diverse for purely rule-based instructions.</p>
+<p><strong>Format normalization rules in prompts:</strong>
+When using strict JSON schemas for structured output, add normalization rules in the prompt:</p>
+<pre><code>Normalization:
+- Dates: always ISO 8601 (YYYY-MM-DD); &quot;yesterday&quot; -&gt; compute an absolute date
+- Currency: numeric amount + currency code; &quot;five bucks&quot; -&gt; {&quot;amount&quot;: 5, &quot;currency&quot;: &quot;USD&quot;}
+- Percentages: decimal fraction; &quot;half&quot; -&gt; 0.5
+</code></pre>
+<p>This prevents semantic errors where the JSON is syntactically valid but values are inconsistent.</p>
+<h2 id="sec-6-2">6.2 Explicit Criteria vs Vague Instructions</h2>
+<p><strong>Bad (vague):</strong></p>
+<pre><code>Check code comments for accuracy.
+Be conservative—report only high-confidence findings.
+</code></pre>
+<p><strong>Good (explicit criteria):</strong></p>
+<pre><code>Flag a comment as problematic ONLY if:
+1. The comment describes behavior that CONTRADICTS the actual code behavior
+2. The comment references a non-existent function or variable
+3. A TODO/FIXME comment refers to a bug that has already been fixed in code
+
+Do NOT flag:
+- Comments that are merely stylistically outdated
+- Comments with minor wording inaccuracies
+- Missing comments (that is a separate category)
+</code></pre>
+<p><strong>Define severity criteria with examples:</strong></p>
+<pre><code>CRITICAL: Runtime failure for users
+  Example: NullPointerException while processing a payment
+
+HIGH: Security vulnerability
+  Example: SQL injection, XSS, missing authorization checks
+
+MEDIUM: Logic bug without immediate impact
+  Example: Wrong sorting, off-by-one error
+
+LOW: Code quality
+  Example: Duplication, suboptimal algorithm for small data
+</code></pre>
+<h2 id="sec-6-3">6.3 Prompt Chaining</h2>
+<p>Prompt chaining breaks a complex task into a sequence of focused steps:</p>
+<pre><code>Step 1: Analyze auth.ts (local issues only)
+       -&gt; Output: list of issues in auth.ts
+
+Step 2: Analyze database.ts (local issues only)
+       -&gt; Output: list of issues in database.ts
+
+Step 3: Integration pass (cross-file dependencies)
+       -&gt; Output: issues at module boundaries
+</code></pre>
+<p><strong>Why this matters:</strong>
+- Avoids <strong>attention dilution</strong>—when the model receives too many files at once, it may miss bugs in some files while providing shallow commentary on others
+- Ensures consistent analysis quality per file
+- Allows separate analysis of cross-file interactions</p>
+<p><strong>When to use prompt chaining vs dynamic decomposition:</strong>
+- <strong>Prompt chaining</strong> — predictable, repeatable tasks (code review, file migrations)
+- <strong>Dynamic decomposition</strong> — open-ended investigations where subtasks become clear only during execution</p>
+<div class="addendum">
+<h3>Also tested here: iterative refinement (official Task Statement 3.5)</h3>
+<p>The exam groups these techniques under <em>Claude Code workflows</em>, not just prompt engineering. Four patterns are named:</p>
+<ul>
+<li><strong>Concrete input/output examples</strong> &mdash; the most effective fix when a prose description is interpreted inconsistently across attempts. Two or three examples beat a longer paragraph.</li>
+<li><strong>Test-driven iteration</strong> &mdash; write the test suite first (expected behaviour, edge cases, performance), then iterate by feeding failures back. This is the named counterpart to the interview pattern and is easy to miss.</li>
+<li><strong>The interview pattern</strong> &mdash; have Claude ask questions first to surface considerations you had not anticipated, before implementing in an unfamiliar domain.</li>
+<li><strong>Batching fixes vs sequencing them</strong> &mdash; when several issues <em>interact</em>, give them all in one detailed message; when they are independent, fix them sequentially. A question may hinge on exactly this distinction.</li>
+</ul>
+</div>
+<h2 id="sec-6-4">6.4 The “Interview” Pattern</h2>
+<p>Before implementing a solution, Claude asks clarifying questions:</p>
+<pre><code>Claude: &quot;Before implementing caching for the API, a few questions:
+1. Which cache invalidation strategy do you prefer—TTL or event-based?
+2. Is stale data acceptable when the cache is unavailable?
+3. Should caching be per-user or global?
+4. What is the expected data volume to cache?&quot;
+</code></pre>
+<p><strong>When this is useful:</strong>
+- Unfamiliar domain (fintech, healthcare, legal systems)
+- Tasks with non-obvious implications (cache strategies, failure modes)
+- Multiple viable approaches where the best choice depends on context</p>
+<hr /></section>
+<section class="day" id="day-17-wed-validation-retry-with-feedback-pydantic-self-correction"><div class="day-top"><h2>Day 17 (Wed) — Validation + retry-with-feedback; Pydantic; self-correction</h2><label class="done"><input type="checkbox" class="done-cb" data-id="day-17-wed-validation-retry-with-feedback-pydantic-self-correction"> mark done</label></div>
+<div class="qlink">2 practice questions cover this day — <a href="practice-exam.html" target="_blank" rel="noopener">open the practice exam</a></div><p><strong>Focus while reading:</strong> When retry helps (format/structure/arithmetic) and when it can't (info absent). Stated-vs-calculated conflict detection.</p>
+<p><strong>Official docs for this topic:</strong></p>
+<ul>
+<li><a href="https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/overview">Prompt Engineering Guide</a></li>
+<li><a href="https://github.com/anthropics/anthropic-cookbook">Anthropic Cookbook (code examples)</a></li>
+</ul>
+<hr />
+<h2 id="sec-6-5">6.5 Validation and Retry-with-Feedback</h2>
+<p>When extracted data fails validation:</p>
+<pre><code>Step 1: Extract data from the document
+Step 2: Validate (Pydantic, JSON Schema, business rules)
+Step 3: If there's an error—retry with context:
+  - The original document
+  - The previous (incorrect) extraction
+  - The specific error: &quot;Field 'total' = 150, but sum(line_items) = 145. Re-check values.&quot;
+</code></pre>
+<p><strong>When retry will be effective:</strong>
+- Format errors (date in the wrong format)
+- Structural errors (a field placed in the wrong location)
+- Arithmetic inconsistencies (the model can re-check)</p>
+<p><strong>When retry will NOT help:</strong>
+- The information is absent from the source document
+- The required context is external (the data is in another document not provided)</p>
+<p><strong>Pydantic as a validation tool:</strong>
+Pydantic is a Python library for schema-based data validation. For the exam, the key points are:
+- <strong>Structural validation:</strong> types, requiredness, enum constraints checked in code after receiving JSON from Claude
+- <strong>Semantic validation:</strong> custom validators enforce business logic (sum of items equals total; start_date &lt; end_date)
+- <strong>Validate–retry loops:</strong> on Pydantic validation failure, construct an error message and re-prompt Claude with the error context
+- <strong>JSON Schema generation:</strong> Pydantic models can generate JSON Schema for <code>tool_use</code>, providing a single source of truth</p>
+<div class="addendum">
+<h3>Feedback loops: the <code>detected_pattern</code> field</h3>
+<p>Beyond retrying a single failure, the guide expects you to design for <em>systematic</em> improvement. Add a <code>detected_pattern</code> field to each structured finding recording which code construct or document shape triggered it. When developers dismiss findings, you can then analyse which patterns generate false positives rather than guessing.</p>
+<p>Related self-correction validations worth memorising: extract <code>calculated_total</code> alongside <code>stated_total</code> so discrepancies surface automatically, and add a <code>conflict_detected</code> boolean when source data is internally inconsistent.</p>
+<p><strong>Know the boundary:</strong> retry-with-feedback repairs <em>format and structural</em> errors, because the information is present and merely misorganised. It cannot repair <em>missing</em> information &mdash; if the value lives in a document that was never supplied, or is illegible, retrying only burns API calls. Recognising which side a failure falls on is a recurring question shape.</p>
+</div>
+<h2 id="sec-6-6">6.6 Self-correction</h2>
+<p>A pattern for detecting internal contradictions:</p>
+<pre><code class="language-json">{
+  &quot;stated_total&quot;: &quot;$150.00&quot;,
+  &quot;calculated_total&quot;: &quot;$145.00&quot;,
+  &quot;conflict_detected&quot;: true,
+  &quot;line_items&quot;: [
+    {&quot;name&quot;: &quot;Widget A&quot;, &quot;price&quot;: 75.00},
+    {&quot;name&quot;: &quot;Widget B&quot;, &quot;price&quot;: 70.00}
+  ]
+}
+</code></pre>
+<p>The model extracts both the stated value and a computed value—if they differ, <code>conflict_detected</code> allows you to handle the discrepancy.</p>
+<hr />
+<hr /></section>
+<section class="day" id="day-18-thu-message-batches-api"><div class="day-top"><h2>Day 18 (Thu) — Message Batches API</h2><label class="done"><input type="checkbox" class="done-cb" data-id="day-18-thu-message-batches-api"> mark done</label></div>
+<div class="qlink">1 practice question cover this day — <a href="practice-exam.html" target="_blank" rel="noopener">open the practice exam</a></div><p><strong>Focus while reading:</strong> 50% savings, up to 24h, no multi-turn tool calling, custom_id; batch-vs-sync decision table; SLA math.</p>
+<p><strong>Official docs for this topic:</strong></p>
+<ul>
+<li><a href="https://platform.claude.com/docs/en/build-with-claude/message-batches">Claude API — Message Batches</a></li>
+</ul>
+<hr />
+<h1>Chapter 7: Message Batches API</h1>
+<blockquote>
+<p>Documentation: <a href="https://platform.claude.com/docs/en/build-with-claude/message-batches">Message Batches</a></p>
+</blockquote>
+<h2 id="sec-7-1">7.1 Overview</h2>
+<p>The Message Batches API lets you submit batches of requests for asynchronous processing:</p>
+<table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Savings</td>
+<td><strong>50%</strong> compared to synchronous calls</td>
+</tr>
+<tr>
+<td>Processing window</td>
+<td>Up to <strong>24 hours</strong> (no latency SLA guarantee)</td>
+</tr>
+<tr>
+<td>Interactive agent loops</td>
+<td><strong>Not possible inside a batch</strong> — each batch request is a single Messages API invocation (one request = one model response). You <em>can</em> include tools and full conversation history in a request, and the model may return <code>tool_use</code>; but executing the tool and sending the result back requires a new request, so a multi-step agentic loop cannot complete within the asynchronous batch window. See <a href="https://platform.claude.com/docs/en/build-with-claude/batch-processing" target="_blank" rel="noopener">batch processing docs</a>.</td>
+</tr>
+<tr>
+<td>Correlation</td>
+<td><code>custom_id</code> field to link request and response</td>
+</tr>
+</tbody>
+</table>
+<h2 id="sec-7-2">7.2 When to Use Batch API vs Synchronous API</h2>
+<table>
+<thead>
+<tr>
+<th>Task</th>
+<th>API</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Pre-merge PR check</td>
+<td><strong>Synchronous</strong></td>
+<td>The developer is waiting; 24 hours is unacceptable</td>
+</tr>
+<tr>
+<td>Overnight tech-debt report</td>
+<td><strong>Batch</strong></td>
+<td>Result is needed by morning; 50% savings</td>
+</tr>
+<tr>
+<td>Weekly security audit</td>
+<td><strong>Batch</strong></td>
+<td>Not urgent; 50% savings</td>
+</tr>
+<tr>
+<td>Interactive code review</td>
+<td><strong>Synchronous</strong></td>
+<td>Immediate response required</td>
+</tr>
+<tr>
+<td>Processing 10,000 documents</td>
+<td><strong>Batch</strong></td>
+<td>Bulk processing; savings are significant</td>
+</tr>
+</tbody>
+</table>
+<h2 id="sec-7-3">7.3 Using <code>custom_id</code></h2>
+<pre><code class="language-json">{
+  &quot;custom_id&quot;: &quot;doc-invoice-2024-001&quot;,
+  &quot;params&quot;: {
+    &quot;model&quot;: &quot;claude-sonnet-5&quot;,
+    &quot;max_tokens&quot;: 1024,
+    &quot;messages&quot;: [{&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;Extract data from: ...&quot;}]
+  }
+}
+</code></pre>
+<p><code>custom_id</code> allows you to:
+- Link the result to the original document
+- On failure, re-submit only the failed documents
+- Avoid re-processing successful documents</p>
+<h2 id="sec-7-4">7.4 Handling Failures in Batches</h2>
+<ol>
+<li>Submit a batch of 100 documents</li>
+<li>95 succeed; 5 fail (context limit exceeded)</li>
+<li>Identify failures by <code>custom_id</code></li>
+<li>Modify strategy (e.g., split long documents into chunks)</li>
+<li>Re-submit only the 5 failed documents</li>
+</ol>
+<h2 id="sec-7-5">7.5 SLA Planning</h2>
+<p>If you need a result in 30 hours and the Batch API can take up to 24 hours:
+- Submission window: 30 - 24 = <strong>6 hours</strong>
+- Batches must be submitted no later than 24 hours before the deadline
+- For frequent submissions, split into 4-hour windows</p>
+<hr />
+<hr /></section>
+<section class="day" id="day-19-fri-escalation-human-in-the-loop"><div class="day-top"><h2>Day 19 (Fri) — Escalation &amp; human-in-the-loop</h2><label class="done"><input type="checkbox" class="done-cb" data-id="day-19-fri-escalation-human-in-the-loop"> mark done</label></div>
+<div class="qlink">3 practice questions cover this day — <a href="practice-exam.html" target="_blank" rel="noopener">open the practice exam</a></div><p><strong>Focus while reading:</strong> Reliable triggers vs unreliable ones (sentiment, self-rated confidence, classifiers); nuanced escalation; structured handoff; calibration + stratified sampling.</p>
+<p><strong>Official docs for this topic:</strong></p>
+<ul>
+<li><a href="https://platform.claude.com/docs/en/api/messages">Claude API — Messages</a></li>
+</ul>
+<hr />
+<h1>Chapter 9: Escalation and Human-in-the-Loop</h1>
+<h2 id="sec-9-1">9.1 When to Escalate to a Human</h2>
+<p><strong>Escalation triggers (clear rules):</strong></p>
+<table>
+<thead>
+<tr>
+<th>Situation</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>The customer explicitly asks “get me a manager”</td>
+<td>Escalate immediately; do not attempt to solve</td>
+</tr>
+<tr>
+<td>Policy does not cover the request</td>
+<td>Escalate (e.g., competitor price matching when policy is silent)</td>
+</tr>
+<tr>
+<td>The agent cannot make progress</td>
+<td>Escalate after a reasonable number of attempts</td>
+</tr>
+<tr>
+<td>Financial operation above a threshold</td>
+<td>Escalate (preferably enforced via a hook, not a prompt)</td>
+</tr>
+<tr>
+<td>Multiple matches when searching for a customer</td>
+<td>Ask for additional identifiers; do not guess</td>
+</tr>
+</tbody>
+</table>
+<p><strong>What is NOT a reliable trigger:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Unreliable method</th>
+<th>Why it fails</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Sentiment analysis</td>
+<td>Customer mood does not correlate with case complexity</td>
+</tr>
+<tr>
+<td>Model self-rated confidence (1–10)</td>
+<td>The model can be confidently wrong; calibration is poor</td>
+</tr>
+<tr>
+<td>An automatic classifier</td>
+<td>Overengineering; may require training data you don’t have</td>
+</tr>
+</tbody>
+</table>
+<h2 id="sec-9-2">9.2 Escalation Patterns</h2>
+<p><strong>Immediate escalation:</strong></p>
+<pre><code>Customer: &quot;I want to speak to a manager&quot;
+Agent: [immediately calls escalate_to_human]
+NOT: &quot;I can help with your issue, let me...&quot;
+</code></pre>
+<p><strong>Escalation after an attempt to resolve:</strong></p>
+<pre><code>Customer: &quot;My refrigerator broke two days after purchase&quot;
+Agent: [checks the order, offers a warranty replacement]
+If the customer is not satisfied -&gt; escalate
+</code></pre>
+<p><strong>Nuanced escalation (acknowledge → resolve → escalate on reiteration):</strong></p>
+<pre><code>Customer: &quot;This is outrageous, I'm very unhappy with the quality!&quot;
+Agent: [acknowledges frustration] &quot;I understand your frustration.&quot;
+       [offers resolution] &quot;I can offer a replacement or a refund.&quot;
+Customer: &quot;No, I want to talk to someone!&quot;
+Agent: [customer insists again -&gt; immediate escalation]
+</code></pre>
+<p>Key principle: acknowledge emotion first, then propose a concrete solution, and only escalate if the customer reiterates the desire for a human. Do not escalate on the first expression of dissatisfaction (that is not the same as requesting a manager).</p>
+<p><strong>Escalation for a policy gap:</strong></p>
+<pre><code>Customer: &quot;Competitor X has this item 30% cheaper—give me a discount&quot;
+Policy: covers price adjustments only on your own site
+Agent: [escalates — policy does not cover competitor price matching]
+</code></pre>
+<h2 id="sec-9-3">9.3 Structured Handoff Protocols</h2>
+<p>On escalation, the agent should pass a structured summary to a human:</p>
+<pre><code class="language-json">{
+  &quot;customer_id&quot;: &quot;CUST-12345&quot;,
+  &quot;customer_name&quot;: &quot;Ivan Petrov&quot;,
+  &quot;issue_summary&quot;: &quot;Refund request for a damaged item&quot;,
+  &quot;order_id&quot;: &quot;ORD-67890&quot;,
+  &quot;root_cause&quot;: &quot;Item arrived damaged; photos attached&quot;,
+  &quot;actions_taken&quot;: [
+    &quot;Verified customer via get_customer&quot;,
+    &quot;Confirmed order via lookup_order&quot;,
+    &quot;Offered a standard replacement — customer insists on a refund&quot;
+  ],
+  &quot;refund_amount&quot;: &quot;$89.99&quot;,
+  &quot;recommended_action&quot;: &quot;Approve a full refund&quot;,
+  &quot;escalation_reason&quot;: &quot;Customer requested to speak with a manager&quot;
+}
+</code></pre>
+<p>The human operator does not have access to the full conversation transcript—they only see this summary. Therefore it must be complete and self-contained.</p>
+<h2 id="sec-9-4">9.4 Confidence Calibration and Human Oversight</h2>
+<p>For data extraction systems:</p>
+<ol>
+<li><strong>Field-level confidence scores:</strong> the model outputs a confidence score per extracted field</li>
+<li><strong>Calibration:</strong> use labeled validation sets to tune thresholds</li>
+<li><strong>Routing:</strong>
+   - High confidence + stable accuracy -&gt; automated processing
+   - Low confidence or ambiguous sources -&gt; human review</li>
+</ol>
+<p><strong>Stratified random sampling:</strong>
+- Even for high-confidence extractions, regularly audit a sample
+- An aggregate 97% accuracy can hide 40% errors for a particular document type
+- Analyze accuracy by document type and by field, not only overall</p>
+<hr />
+<hr /></section>
+<section class="day" id="day-20-sat-error-handling-context-management"><div class="day-top"><h2>Day 20 (Sat) — Error handling + context management</h2><label class="done"><input type="checkbox" class="done-cb" data-id="day-20-sat-error-handling-context-management"> mark done</label></div>
+<div class="qlink">5 practice questions cover this day — <a href="practice-exam.html" target="_blank" rel="noopener">open the practice exam</a></div><p><strong>Focus while reading:</strong> Four error categories &amp; anti-patterns; fact blocks, trimming, position-aware input, scratchpads, subagent delegation, state persistence.</p>
+<p><strong>Official docs for this topic:</strong></p>
+<ul>
+<li><a href="https://platform.claude.com/docs/en/agent-sdk/hooks">Claude Agent SDK — Hooks</a></li>
+</ul>
+<hr />
+<h1>Chapter 10: Error Handling in Multi-agent Systems</h1>
+<h2 id="sec-10-1">10.1 Error Categories</h2>
+<table>
+<thead>
+<tr>
+<th>Category</th>
+<th>Examples</th>
+<th>Retryable</th>
+<th>Agent action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Transient</strong></td>
+<td>Timeout, 503, network failure</td>
+<td>Yes</td>
+<td>Retry with exponential backoff</td>
+</tr>
+<tr>
+<td><strong>Validation</strong></td>
+<td>Invalid input format, missing required field</td>
+<td>No (fix input)</td>
+<td>Modify request and retry</td>
+</tr>
+<tr>
+<td><strong>Business</strong></td>
+<td>Policy violation, threshold exceeded</td>
+<td>No</td>
+<td>Explain to the user; propose an alternative</td>
+</tr>
+<tr>
+<td><strong>Permission</strong></td>
+<td>Access denied</td>
+<td>No</td>
+<td>Escalate</td>
+</tr>
+</tbody>
+</table>
+<h2 id="sec-10-2">10.2 Error-handling Anti-patterns</h2>
+<table>
+<thead>
+<tr>
+<th>Anti-pattern</th>
+<th>Problem</th>
+<th>Correct approach</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Generic status “search unavailable”</td>
+<td>The coordinator can’t decide how to recover</td>
+<td>Return error type, query, partial results, alternatives</td>
+</tr>
+<tr>
+<td>Silent suppression (empty result = success)</td>
+<td>Coordinator thinks there were no matches, but it was a failure</td>
+<td>Distinguish “no results” from “search failure”</td>
+</tr>
+<tr>
+<td>Aborting the whole workflow on one failure</td>
+<td>You lose all partial results</td>
+<td>Continue with partial results; annotate gaps</td>
+</tr>
+<tr>
+<td>Infinite retries inside a subagent</td>
+<td>Latency and wasted resources</td>
+<td>Local recovery (1–2 retries), then propagate to coordinator</td>
+</tr>
+</tbody>
+</table>
+<h2 id="sec-10-3">10.3 A Structured Subagent Error</h2>
+<pre><code class="language-json">{
+  &quot;status&quot;: &quot;partial_failure&quot;,
+  &quot;failure_type&quot;: &quot;timeout&quot;,
+  &quot;attempted_query&quot;: &quot;AI impact on music industry 2024&quot;,
+  &quot;partial_results&quot;: [
+    {&quot;title&quot;: &quot;AI Music Generation Report&quot;, &quot;url&quot;: &quot;...&quot;, &quot;relevance&quot;: 0.8}
+  ],
+  &quot;alternative_approaches&quot;: [
+    &quot;Try a narrower query: 'AI music composition tools'&quot;,
+    &quot;Use an alternative data source&quot;
+  ],
+  &quot;coverage_impact&quot;: &quot;Not covered: AI impact on music production&quot;
+}
+</code></pre>
+<p>This provides the coordinator with the information needed to decide:
+- Retry with a modified query?
+- Use partial results?
+- Delegate to a different subagent?
+- Continue without this section and annotate the gap?</p>
+<h2 id="sec-10-4">10.4 Coverage Annotations in the Final Synthesis</h2>
+<pre><code class="language-markdown">## Report: AI Impact on Creative Industries
+
+### Visual Art (FULL COVERAGE)
+[research results]
+
+### Music (PARTIAL COVERAGE — search agent timeout)
+[partial results]
+⚠️ Note: coverage for this section is limited due to a timeout in the search agent.
+
+### Literature (FULL COVERAGE)
+[research results]
+</code></pre>
+<hr />
+<h1>Chapter 11: Context Management in Production Systems</h1>
+<h2 id="sec-11-1">11.1 Extract Facts into a Separate Block</h2>
+<p>Instead of relying on conversation history (which degrades during summarization), extract key facts into a structured block:</p>
+<pre><code>=== CASE FACTS (updated whenever a new fact appears) ===
+Customer ID: CUST-12345
+Order ID: ORD-67890
+Order Date: 2025-01-15
+Order Amount: $89.99
+Issue: Damaged item on delivery
+Customer Request: Full refund
+Status: Pending manager approval
+===
+</code></pre>
+<p>Include this block in every prompt, regardless of how history is summarized.</p>
+<h2 id="sec-11-2">11.2 Trimming Tool Results</h2>
+<p>If <code>lookup_order</code> returns 40+ fields but you only need 5 for the current task:</p>
+<pre><code class="language-python"># PostToolUse hook: keep only relevant fields
+@hook(&quot;PostToolUse&quot;, tool=&quot;lookup_order&quot;)
+def trim_order_fields(result):
+    return {
+        &quot;order_id&quot;: result[&quot;order_id&quot;],
+        &quot;status&quot;: result[&quot;status&quot;],
+        &quot;total&quot;: result[&quot;total&quot;],
+        &quot;items&quot;: result[&quot;items&quot;],
+        &quot;return_eligible&quot;: result[&quot;return_eligible&quot;]
+    }
+</code></pre>
+<p>This conserves context and reduces noise.</p>
+<h2 id="sec-11-3">11.3 Position-aware Input</h2>
+<p>Place critical information with the lost-in-the-middle effect in mind:</p>
+<pre><code>[KEY FINDINGS — at the top]
+Found 3 critical vulnerabilities...
+
+[DETAILED RESULTS — middle]
+=== File auth.ts ===
+...
+=== File database.ts ===
+...
+
+[ACTION ITEMS — at the end]
+Priority: fix auth.ts vulnerabilities before merge.
+</code></pre>
+<h2 id="sec-11-4">11.4 Scratchpad Files</h2>
+<p>In long investigations, the agent can write key findings to a scratchpad file:</p>
+<pre><code># investigation-scratchpad.md
+## Key findings
+- PaymentProcessor in src/payments/processor.ts inherits from BaseProcessor
+- refund() is called from 3 places: OrderController, AdminPanel, CronJob
+- External PaymentGateway API has a rate limit of 100 req/min
+- Migration #47 added refund_reason (NOT NULL) — 2024-12-01
+</code></pre>
+<p>When context degrades (or in a new session), the agent can consult the scratchpad instead of re-running discovery.</p>
+<h2 id="sec-11-5">11.5 Delegating to Subagents to Protect Context</h2>
+<pre><code>Main agent: &quot;Investigate dependencies of the payments module&quot;
+  -&gt; Subagent (Explore): reads 15 files, traces imports
+  -&gt; Returns: &quot;Payments depends on AuthService, OrderModel, and the external PaymentGateway API&quot;
+
+Main agent: keeps one line in context instead of 15 files
+</code></pre>
+<p><strong>Separate context layer:</strong>
+In multi-agent systems, each subagent operates within a limited context budget—it receives only the information required for its task. The coordinator acts as a separate context layer: it aggregates subagent outputs, stores global state, and allocates context. This prevents “context leakage,” where one agent consumes the window with information irrelevant to others.</p>
+<p><strong>Constrained context budgets for subagents:</strong>
+- Send minimal context: a specific task + necessary data
+- Instruct the subagent to return structured results, not raw data dumps
+- Use <code>allowedTools</code> to limit the subagent’s toolset—fewer tools means fewer distractions and lower context cost</p>
+<h2 id="sec-11-6">11.6 Structured State Persistence (for crash recovery)</h2>
+<p>Each agent exports its state to a known location:</p>
+<pre><code class="language-json">// agent-state/web-search-agent.json
+{
+  &quot;status&quot;: &quot;completed&quot;,
+  &quot;queries_executed&quot;: [&quot;AI music 2024&quot;, &quot;AI music composition&quot;],
+  &quot;results_count&quot;: 12,
+  &quot;key_findings&quot;: [...],
+  &quot;coverage&quot;: [&quot;music composition&quot;, &quot;music production&quot;],
+  &quot;gaps&quot;: [&quot;music distribution&quot;, &quot;music licensing&quot;]
+}
+</code></pre>
+<p>The coordinator loads a manifest on resume:</p>
+<pre><code class="language-json">// agent-state/manifest.json
+{
+  &quot;web-search&quot;: &quot;completed&quot;,
+  &quot;doc-analysis&quot;: &quot;in_progress&quot;,
+  &quot;synthesis&quot;: &quot;not_started&quot;
+}
+</code></pre>
+<hr />
+<hr /></section>
+<section class="day" id="day-21-sun-preserving-provenance"><div class="day-top"><h2>Day 21 (Sun) — Preserving provenance</h2><label class="done"><input type="checkbox" class="done-cb" data-id="day-21-sun-preserving-provenance"> mark done</label></div>
+<div class="qlink">2 practice questions cover this day — <a href="practice-exam.html" target="_blank" rel="noopener">open the practice exam</a></div><p><strong>Focus while reading:</strong> Attribution loss; preserving conflicting values with dates; render-by-content-type.</p>
+<hr />
+<h1>Chapter 12: Preserving Provenance</h1>
+<h2 id="sec-12-1">12.1 The Attribution Loss Problem</h2>
+<p>When summarizing results from multiple sources, the “claim → source” link can be lost:</p>
+<pre><code>Bad: &quot;The AI music market is estimated at $3.2B.&quot; (No source, no year.)
+
+Good:
+{
+  &quot;claim&quot;: &quot;The AI music market is estimated at $3.2B.&quot;,
+  &quot;source_url&quot;: &quot;https://example.com/report&quot;,
+  &quot;source_name&quot;: &quot;Global AI Music Report 2024&quot;,
+  &quot;publication_date&quot;: &quot;2024-06-15&quot;,
+  &quot;confidence&quot;: 0.9
+}
+</code></pre>
+<h2 id="sec-12-2">12.2 Handling Conflicting Data</h2>
+<p>When two sources provide different values:</p>
+<pre><code class="language-json">{
+  &quot;claim&quot;: &quot;Share of AI-generated music on streaming platforms&quot;,
+  &quot;values&quot;: [
+    {
+      &quot;value&quot;: &quot;12%&quot;,
+      &quot;source&quot;: &quot;Spotify Annual Report 2024&quot;,
+      &quot;date&quot;: &quot;2024-03&quot;,
+      &quot;methodology&quot;: &quot;Automated classification&quot;
+    },
+    {
+      &quot;value&quot;: &quot;8%&quot;,
+      &quot;source&quot;: &quot;Music Industry Association Survey&quot;,
+      &quot;date&quot;: &quot;2024-07&quot;,
+      &quot;methodology&quot;: &quot;Survey of 500 labels&quot;
+    }
+  ],
+  &quot;conflict_detected&quot;: true,
+  &quot;possible_explanation&quot;: &quot;Difference in methodology and time period&quot;
+}
+</code></pre>
+<p>Do not arbitrarily choose one value. Preserve both with attribution and let the coordinator decide.</p>
+<h2 id="sec-12-3">12.3 Include Dates for Correct Interpretation</h2>
+<p>Without dates, temporal differences can be misinterpreted as contradictions:</p>
+<pre><code>Bad: &quot;Source A says 10%, source B says 15%. Contradiction.&quot;
+Good: &quot;Source A (2023) says 10%, source B (2024) says 15%. Likely +5% growth over a year.&quot;
+</code></pre>
+<h2 id="sec-12-4">12.4 Render by Content Type</h2>
+<p>Don’t force everything into one format:
+- Financial data -&gt; tables
+- News and analysis -&gt; prose
+- Technical findings -&gt; structured lists
+- Time series -&gt; chronological ordering</p>
+<hr />
+<hr /></section>
+<h1 class="week-head" id="week-4-integration-full-practice-exam-readiness">WEEK 4 — Integration, Full Practice &amp; Exam Readiness</h1>
+<section class="day" id="days-22-28-practice-remediation"><div class="day-top"><h2>Week 4 — Practice &amp; remediation</h2></div><p><strong>Focus:</strong> No new source chapters. Week 4 is a diagnose &rarr; repair &rarr; retest loop, not more reading. Each day below is checkpointed separately so the progress bar stays meaningful.</p><h2 id="sec-w4-readiness">Readiness check</h2><p>Do not rely on a raw percentage &mdash; the real score is scaled. You are ready when you can:</p><ul><li>map each of the six scenarios to its primary domains without confusing D2, D3 and D4;</li><li>explain why each <em>distractor</em> fails, not merely identify the keyed answer;</li><li>complete a fresh mixed set without repeating the same failure pattern;</li><li>finish 60 questions in 120 minutes with nothing left blank;</li><li>and produce one practical artifact per domain.</li></ul><p>Aim for consistent 80%+ across <em>every</em> domain before booking, not a score that squeaks past the line &mdash; the margin absorbs both the scaling uncertainty and the fact that practice questions are never the real ones.</p><hr /></section>
+<section class="day" id="day-22-baseline-simulation"><div class="day-top"><h2>Day 22 — Baseline simulation</h2><label class="done"><input type="checkbox" class="done-cb" data-id="day-22-baseline-simulation"> mark done</label></div><p>Run a full exam simulation in the practice app before studying anything &mdash; 4 of 6 scenarios, timed, no feedback until the end. Resist the urge to warm up first: an honest baseline is the whole point.</p><p><strong>Done when:</strong> A scaled score you trust, and the app's ranked review plan.</p><hr /></section>
+<section class="day" id="day-23-work-the-review-plan"><div class="day-top"><h2>Day 23 — Work the review plan</h2><label class="done"><input type="checkbox" class="done-cb" data-id="day-23-work-the-review-plan"> mark done</label></div><p>Open the review plan the app generated. It ranks the guide days you missed most, with the exact chapter sections. Re-read only those. Do not re-read anything you scored well on.</p><p><strong>Done when:</strong> Every day on the plan re-read and re-marked for review.</p><hr /></section>
+<section class="day" id="day-24-weakest-domains-weighted"><div class="day-top"><h2>Day 24 — Weakest domains, weighted</h2><label class="done"><input type="checkbox" class="done-cb" data-id="day-24-weakest-domains-weighted"> mark done</label></div><p>Re-read your two weakest <em>domains</em>, weighting by exam share &mdash; D1 is 27% of scored content, D5 only 15%. A gap in Agentic Architecture costs roughly twice what the same gap costs in Context Management.</p><p><strong>Done when:</strong> Cause-level understanding, not memorised answers.</p><hr /></section>
+<section class="day" id="day-25-second-simulation"><div class="day-top"><h2>Day 25 — Second simulation</h2><label class="done"><input type="checkbox" class="done-cb" data-id="day-25-second-simulation"> mark done</label></div><p>A second full simulation with a different random draw of four scenarios. Compare against Day 22 domain by domain.</p><p><strong>Done when:</strong> Confirmation that the same misconception is not recurring in a new scenario.</p><hr /></section>
+<section class="day" id="day-26-build-one-artifact-per-weak-domain"><div class="day-top"><h2>Day 26 — Build one artifact per weak domain</h2><label class="done"><input type="checkbox" class="done-cb" data-id="day-26-build-one-artifact-per-weak-domain"> mark done</label></div><p>Recognition is not judgment. Build something small for each weak domain: an agent loop trace showing stop_reason handling, a tool contract with a structured error matrix, a repo with a project command plus a path-scoped rule.</p><p><strong>Done when:</strong> One runnable or written artifact per weak domain.</p><hr /></section>
+<section class="day" id="day-27-drills-and-consolidation"><div class="day-top"><h2>Day 27 — Drills and consolidation</h2><label class="done"><input type="checkbox" class="done-cb" data-id="day-27-drills-and-consolidation"> mark done</label></div><p>Quick drills in spare moments (the app's 10-question mode is domain-weighted). Skim flashcards and the cheat sheet. No new material today.</p><p><strong>Done when:</strong> Recall speed, and a calm head.</p><hr /></section>
+<section class="day" id="day-28-final-run-and-logistics"><div class="day-top"><h2>Day 28 — Final run and logistics</h2><label class="done"><input type="checkbox" class="done-cb" data-id="day-28-final-run-and-logistics"> mark done</label></div><p>One last timed simulation, finishing with nothing blank. Then verify registration details, retake rules and your test-centre or proctoring setup. Stop studying early.</p><p><strong>Done when:</strong> Ready. Rest.</p><hr /></section>
+<section class="day" id="week-4-appendix-practice-question-banks"><div class="day-top"><h2>Week 4 appendix — Practice question banks</h2></div><p>These live in the guide and repo; use them for the Week-4 timed tests:</p>
+<ul>
+<li>Worked examples with explanations — guide section 'Examples of Exam Questions with Explanations' (12 questions, each with the correct answer and why).</li>
+<li>Full practice test — guide section 'Practice Test' (60 questions across 4 scenarios).</li>
+<li>Interactive HTML test from the repo: <code>practical_test_en.html</code>.</li>
+<li><strong>Linked practice exam (this bundle):</strong> <a href="practice-exam.html" target="_blank" rel="noopener">practice-exam.html</a> &mdash; 51 scenario-anchored questions across the six official scenarios, three modes (study / timed exam simulation / 10-question quick drill), domain-weighted scaled scoring at the 720 line, multiple-response items, and every question deep-linked back to the day of this guide that covers it. Its results screen generates a review plan ranking the days you missed most.</li>
+<li>Your own materials in this bundle: <code>baseline_diagnostic</code> (pre-test), <code>practice_quiz</code> (24 fresh Qs), <code>flashcards</code>, <code>cheat_sheet</code>.</li>
+</ul></section></main>
+</div>
+<button class="backtop" id="backtop" title="Back to top">↑ top</button>
+<script>
+var side=document.getElementById('side'),menuBtn=document.getElementById('menuBtn');
+menuBtn.onclick=function(){side.classList.toggle('open')};
+document.querySelectorAll('.wk-t').forEach(function(b){b.onclick=function(){var d=document.getElementById('d-'+b.dataset.t);if(d)d.style.display=(d.style.display==='none'?'flex':'none')}});
+document.querySelectorAll('.day-link').forEach(function(a){a.onclick=function(){side.classList.remove('open')}});
+var links=[].slice.call(document.querySelectorAll('.day-link'));
+var secs=links.map(function(a){return document.getElementById(a.dataset.id)}).filter(Boolean);
+function onScroll(){var y=window.scrollY+80,cur=null;secs.forEach(function(s){if(s.offsetTop<=y)cur=s.id});links.forEach(function(a){a.classList.toggle('active',a.dataset.id===cur)})}
+window.addEventListener('scroll',onScroll);onScroll();
+var search=document.getElementById('search');
+
+var total=document.querySelectorAll('.done-cb').length,fill=document.getElementById('progFill'),ptxt=document.getElementById('progTxt');
+var STORE='cca_reader_progress_v2', OLD='cca_reader_progress_v1';
+var INTERVAL=3; // days before a completed day is due for review again
+function loadStore(){
+  try{
+    var raw=localStorage.getItem(STORE);
+    if(raw) return JSON.parse(raw);
+    // migrate v1 ({id:1}) -> v2 ({id:{t:isoDate}})
+    var old=JSON.parse(localStorage.getItem(OLD)||'{}'), out={}, today=iso(new Date());
+    Object.keys(old).forEach(function(k){ out[k]={t:today}; });
+    if(Object.keys(out).length) saveStore(out);
+    return out;
+  }catch(e){return {}}
+}
+function saveStore(s){try{localStorage.setItem(STORE,JSON.stringify(s))}catch(e){}}
+function iso(d){return d.toISOString().slice(0,10)}
+function daysSince(t){ if(!t) return null; var ms=Date.now()-new Date(t+'T00:00:00').getTime(); return Math.floor(ms/86400000); }
+function isDue(id){ var e=loadStore()[id]; if(!e) return false; var d=daysSince(e.t); return d!==null && d>=INTERVAL; }
+
+function upd(){
+  var done=document.querySelectorAll('.done-cb:checked').length;
+  fill.style.width=(total?done/total*100:0)+'%';
+  var st=loadStore(), due=0;
+  Object.keys(st).forEach(function(k){ if(isDue(k)) due++; });
+  ptxt.textContent=done+' / '+total+' days'+(due?'  ·  '+due+' due for review':'');
+}
+
+function stamp(id){
+  var el=document.querySelector('.rev-stamp[data-id="'+id+'"]');
+  if(!el) return;
+  var e=loadStore()[id];
+  if(!e){ el.textContent=''; el.className='rev-stamp'; el.dataset.id=id; return; }
+  var d=daysSince(e.t);
+  var label = d===0?'reviewed today':(d===1?'reviewed yesterday':'reviewed '+d+' days ago');
+  el.textContent=label;
+  el.className='rev-stamp'+(d>=INTERVAL?' due':'');
+  el.dataset.id=id;
+}
+
+function applyState(cb){
+  var sec=document.getElementById(cb.dataset.id);
+  var lnk=document.querySelector('.day-link[data-id="'+cb.dataset.id+'"]');
+  if(sec)sec.classList.toggle('completed',cb.checked);
+  if(lnk){ lnk.classList.toggle('is-done',cb.checked); lnk.classList.toggle('is-due',cb.checked&&isDue(cb.dataset.id)); }
+  stamp(cb.dataset.id);
+}
+
+var saved=loadStore();
+document.querySelectorAll('.done-cb').forEach(function(cb){
+  var id=cb.dataset.id;
+  // inject the review stamp + "reviewed again" control next to each checkbox
+  var lbl=cb.parentNode;
+  var wrap=document.createElement('span');
+  wrap.innerHTML=' <span class="rev-stamp" data-id="'+id+'"></span>'+
+                 ' <button type="button" class="rev-btn" data-id="'+id+'">reviewed again</button>';
+  lbl.parentNode.appendChild(wrap);
+  if(saved[id]){cb.checked=true}
+  applyState(cb);
+  cb.onchange=function(){
+    var s=loadStore();
+    if(cb.checked){ s[id]={t:iso(new Date())} } else { delete s[id] }
+    saveStore(s); applyState(cb); upd();
+  };
+});
+document.querySelectorAll('.rev-btn').forEach(function(b){
+  b.onclick=function(){
+    var id=b.dataset.id, s=loadStore();
+    s[id]={t:iso(new Date())}; saveStore(s);
+    var cb=document.querySelector('.done-cb[data-id="'+id+'"]');
+    if(cb){cb.checked=true; applyState(cb);}
+    upd();
+  };
+});
+
+// sidebar filter: all / due for review
+var dueOnly=false;
+var dueBtn=document.getElementById('dueBtn');
+function applyFilter(){
+  var q=(search.value||'').toLowerCase();
+  links.forEach(function(a){
+    var matchText=a.textContent.toLowerCase().indexOf(q)>-1;
+    var matchDue=!dueOnly||isDue(a.dataset.id);
+    a.style.display=(matchText&&matchDue)?'':'none';
+  });
+  if(dueBtn){
+    dueBtn.classList.toggle('on',dueOnly);
+    var n=links.filter(function(a){return isDue(a.dataset.id)}).length;
+    dueBtn.textContent=dueOnly?('Showing due ('+n+')'):('Due for review ('+n+')');
+  }
+}
+if(dueBtn) dueBtn.onclick=function(){ dueOnly=!dueOnly; applyFilter(); };
+search.oninput=applyFilter;
+applyFilter();
+upd();
+document.getElementById('backtop').onclick=function(){window.scrollTo({top:0,behavior:'smooth'})};
+</script>
+</body></html>
