@@ -20,6 +20,8 @@ Open study materials for Anthropic's **Claude Certified Architect – Foundation
 | **[Interactive flashcards](https://aloaguilar20.github.io/claude-certified-architect-foundations-prep/flashcards.html)** | 51 self-grading cards by domain · missed cards build a persistent review pile · deep-linked from exam results ([markdown source](cheatsheets/flashcards.md)) |
 | **[Interactive cheat sheet](https://aloaguilar20.github.io/claude-certified-architect-foundations-prep/cheat-sheet.html)** | One block per domain + the 5-step scenario method, print-friendly ([markdown source](cheatsheets/cheat-sheet.md)) |
 
+> **About the practice-exam questions:** all 51 items are AI-generated with Claude Fable 5 from the official exam guide's published domains and scenario contexts. They are original practice questions written to test your understanding of the material — **not real exam questions**, not derived from the actual item bank, and not predictive of the specific questions you will face.
+
 ## 📋 Exam at a glance
 
 | Item | Detail |
@@ -56,7 +58,7 @@ Use both — they reinforce each other.
   - [Claude Code & Agent SDK docs](https://code.claude.com/docs) (CLAUDE.md, skills, hooks, subagents, sessions, headless)
   - [Model Context Protocol](https://modelcontextprotocol.io) (tools, resources, prompts, servers)
 - Topic sequencing was originally inspired by the excellent community guide [paullarionov/claude-certified-architect](https://github.com/paullarionov/claude-certified-architect) — a great complementary resource, with guides in 11 languages. The text here was written independently, reorganized by exam domain, and updated against the current official docs (see the "current-docs notes" flagged throughout, e.g. `pause_turn`, the four-hop import limit, and batch-API tool support).
-- The research and doc-verification behind this kit were done with **Claude Fable 5** — Anthropic's most capable model at the time of writing — which felt fitting for a Claude certification. Every claim was checked against the primary sources above.
+- The research and doc-verification behind this kit were done with **Claude Fable 5** — Anthropic's most capable model at the time of writing — which felt fitting for a Claude certification. Every claim was checked against the primary sources above. The practice-exam questions are likewise **AI-generated with Fable 5** from the published exam contents: original study aids, not real or leaked exam items.
 
 ## 🖥 Run the interactive material locally
 
