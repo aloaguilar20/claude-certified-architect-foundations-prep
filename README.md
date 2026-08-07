@@ -30,8 +30,8 @@ Open study materials for Anthropic's **Claude Certified Architect – Foundation
 | Scoring | Scaled 100–1,000; **720 to pass** (scaled — 720 ≠ 72% correct) |
 | Retakes | 14 days after a 1st failure, 30 after a 2nd, 90 after a 3rd; four attempts per rolling 12 months |
 | Validity | 12 months |
-| Access | Via the [Claude Partner Network](https://claude.com/partners) (free to join) → Partner Academy, scheduled through Pearson VUE |
-| Official exam guide | Not publicly hosted — free download inside the Anthropic Partner Academy once your org joins the Partner Network. Get it and read it: it is the authoritative source this kit is checked against |
+| Access | Partner-only: your **organization** must be a member of the [Claude Partner Network](https://claude.com/partners) and register you in the Partner Academy; exams are scheduled through Pearson VUE. Not open individual enrollment |
+| Official exam guide | Not publicly hosted — available inside the Anthropic Partner Academy to registered practitioners of member organizations. If you have access, get it and read it: it is the authoritative source this kit is checked against |
 
 **Domain weightings:** D1 Agentic Architecture 27% · D2 Tools/MCP 18% · D3 Claude Code 20% · D4 Prompt Engineering/Structured Output 20% · D5 Context/Reliability 15%.
 
@@ -51,7 +51,7 @@ Use both — they reinforce each other.
 
 ## 📚 Sources & attribution
 
-- Written against **Anthropic's official CCAR-F exam guide** (not publicly hosted — download it free from the Anthropic Partner Academy after joining the [Claude Partner Network](https://claude.com/partners)) and the **official documentation**, which is cited per topic throughout:
+- Written against **Anthropic's official CCAR-F exam guide** (not publicly hosted — distributed inside the Anthropic Partner Academy to practitioners registered by [Claude Partner Network](https://claude.com/partners) member organizations) and the **official documentation**, which is cited per topic throughout:
   - [Claude API & platform docs](https://platform.claude.com/docs) (Messages API, tool use, batches, prompt engineering)
   - [Claude Code & Agent SDK docs](https://code.claude.com/docs) (CLAUDE.md, skills, hooks, subagents, sessions, headless)
   - [Model Context Protocol](https://modelcontextprotocol.io) (tools, resources, prompts, servers)
@@ -60,7 +60,7 @@ Use both — they reinforce each other.
 
 ## 🖥 Run the interactive material locally
 
-Both HTML apps are single files with no build step and no network calls — clone the repo and open `practice-exam.html` or `study-guide.html` in a browser. Progress is stored locally in your browser.
+All four HTML apps — `practice-exam.html`, `study-guide.html`, `flashcards.html`, `cheat-sheet.html` — are single files with no build step and no network calls: clone the repo and open any of them in a browser. Progress is stored locally in your browser.
 
 ## 🤝 Contributing
 

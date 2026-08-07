@@ -12,8 +12,8 @@
 | Scoring | Scaled 100–1,000, minimum **720**. Scaled means 720 is *not* 72% correct; no raw-score conversion or pass rate is published. Treat any site claiming an exact required question count as invented. |
 | Retakes | 14 days after a first failure, 30 after a second, 90 after a third. Four attempts per rolling 12 months. |
 | Validity | 12 months from the award date. |
-| Access | Open to organizations in the [Claude Partner Network](https://claude.com/partners) — membership is free. Register through the Partner Academy, then schedule via Pearson VUE. |
-| Official exam guide | **Get it and read it first.** Not publicly hosted: after your org joins the Partner Network, log into the Anthropic Partner Academy and download it from the certification page. It is the authoritative source for logistics, domains, and the six scenarios — everything in this repo defers to it. |
+| Access | **Partner-only, not open individual enrollment.** Your organization must be a member of the [Claude Partner Network](https://claude.com/partners) and register you as a practitioner in the Partner Academy; the exam is then scheduled via Pearson VUE. |
+| Official exam guide | **If you have Academy access, get it and read it first.** Not publicly hosted: registered practitioners download it from the certification page inside the Anthropic Partner Academy. It is the authoritative source for logistics, domains, and the six scenarios — everything in this repo defers to it. |
 
 ## The five domains
 
