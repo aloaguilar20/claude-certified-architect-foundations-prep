@@ -16,6 +16,16 @@
         --sel-bg:#fdf3ee;--ok-bg:#eaf5ee;--no-bg:#fbeceb;--soft-bg:#f4f2ee;--gbox-bg:#f0f4ef;
         --tag-bg:#f6e9e3;--tag-mr-bg:#e8eef3;--tag-mr-ink:#3d5a73;--tag-ctx-bg:#eef0ea;--tag-ctx-ink:#5b6b52;
         --btn-disabled:#d8d2c8;--gref:#8a847c;--hover-bg:#fdf9f7;}}
+:root[data-theme="dark"]{--bg:#0d1117;--card:#161b22;--ink:#e6edf3;--muted:#8b949e;--accent:#d97757;--accent-dk:#f0a284;
+        --accent-hover:#c25f39;--good:#4fbe8e;--bad:#e5625e;--bd:#30363d;--scen:#1c2128;
+        --sel-bg:#2b1d16;--ok-bg:#15291f;--no-bg:#2d1a18;--soft-bg:#1c2128;--gbox-bg:#182420;
+        --tag-bg:#33221b;--tag-mr-bg:#1a2733;--tag-mr-ink:#79b0da;--tag-ctx-bg:#1e241c;--tag-ctx-ink:#95b287;
+        --btn-disabled:#30363d;--gref:#6e7681;--hover-bg:#1c2128;}
+:root[data-theme="light"]{--bg:#faf9f6;--card:#fff;--ink:#2a2a28;--muted:#6b6660;--accent:#c15f3c;--accent-dk:#a3492a;
+        --accent-hover:#a3492a;--good:#3f7d5c;--bad:#b8453a;--bd:#e8e3db;--scen:#f4efe8;
+        --sel-bg:#fdf3ee;--ok-bg:#eaf5ee;--no-bg:#fbeceb;--soft-bg:#f4f2ee;--gbox-bg:#f0f4ef;
+        --tag-bg:#f6e9e3;--tag-mr-bg:#e8eef3;--tag-mr-ink:#3d5a73;--tag-ctx-bg:#eef0ea;--tag-ctx-ink:#5b6b52;
+        --btn-disabled:#d8d2c8;--gref:#8a847c;--hover-bg:#fdf9f7;}
   *{box-sizing:border-box}
   body{background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
        margin:0;padding:22px 16px 60px;line-height:1.55}
@@ -97,9 +107,10 @@
   .timer{font-variant-numeric:tabular-nums}
   .timer.low{color:var(--bad);font-weight:600}
 </style>
-</head>
+<script>try{var t=localStorage.getItem("ccarf-theme");if(t)document.documentElement.dataset.theme=t;}catch(e){}</script></head>
 <body>
 <div class="wrap">
+  <button class="gh" id="themeBtn" aria-label="Switch theme" style="float:right;margin-left:10px"></button>
   <h1>Claude Certified Architect &ndash; Foundations</h1>
   <div class="sub">Practice exam built from the official exam guide: six official scenario contexts, real domain weightings, scaled 100&ndash;1,000 scoring at a 720 pass mark, and both multiple-choice and multiple-response items. Independent study material; not affiliated with or endorsed by Anthropic.</div>
   <div class="sub" style="margin-top:6px"><b>About these questions:</b> all items are AI-generated with Claude Fable 5 from the official exam guide's published domains and scenario contexts. They are original practice questions written to test your understanding of the material &mdash; they are <b>not real exam questions</b>, are not derived from the actual item bank, and seeing them tells you nothing about the specific questions on your exam.</div>
@@ -464,6 +475,18 @@ document.getElementById('copy').onclick=()=>{
     const m=document.getElementById('copymsg'); m.style.display='inline'; setTimeout(()=>m.style.display='none',2000);
   }).catch(()=>document.execCommand('copy'));
 };
+
+(function(){
+ var btn=document.getElementById("themeBtn"); if(!btn) return;
+ function eff(){var o=document.documentElement.dataset.theme; if(o)return o;
+  var mm=window.matchMedia; return (mm&&mm("(prefers-color-scheme: light)").matches)?"light":"dark";}
+ function paint(){btn.textContent=eff()==="dark"?"\u2600\uFE0F":"\uD83C\uDF19"; btn.title="Switch to "+(eff()==="dark"?"light":"dark")+" theme";}
+ btn.onclick=function(){var next=eff()==="dark"?"light":"dark";
+  document.documentElement.dataset.theme=next;
+  try{localStorage.setItem("ccarf-theme",next);}catch(e){}
+  paint();};
+ paint();
+})();
 </script>
 </body>
 </html>
