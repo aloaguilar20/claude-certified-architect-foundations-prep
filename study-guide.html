@@ -2,8 +2,8 @@
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Claude Certified Architect — Source Reader</title>
 <style>
-:root{--bg:#faf9f5;--panel:#fff;--ink:#1f1f1c;--soft:#5c5b55;--faint:#8a897f;--line:#e6e4db;--accent:#3b6ea5;--accent-bg:#eaf1f8;--code:#f3f1ea;--done:#1d9e75;--done-bg:#e1f5ee}
-@media(prefers-color-scheme:dark){:root{--bg:#1a1915;--panel:#242320;--ink:#ece9df;--soft:#b4b2a7;--faint:#88867c;--line:#39372f;--accent:#7fb0e6;--accent-bg:#1f2c3a;--code:#2d2b25;--done:#5dcaa5;--done-bg:#13332a}}
+:root{--bg:#0d1117;--panel:#161b22;--ink:#e6edf3;--soft:#a8b3bf;--faint:#8b949e;--line:#30363d;--accent:#d97757;--accent-bg:#2b1d16;--code:#1c2128;--done:#4fbe8e;--done-bg:#15291f;--warn:#d9a94f;--warn-bg:#33290f}
+@media(prefers-color-scheme:light){:root{--bg:#faf9f5;--panel:#fff;--ink:#1f1f1c;--soft:#5c5b55;--faint:#8a897f;--line:#e6e4db;--accent:#a3492a;--accent-bg:#faeee8;--code:#f3f1ea;--done:#1d9e75;--done-bg:#e1f5ee;--warn:#9a6b1f;--warn-bg:#fdf6ec}}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.7 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
 .topbar{position:sticky;top:0;z-index:20;background:var(--panel);border-bottom:1px solid var(--line);padding:10px 18px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
@@ -73,8 +73,8 @@ strong{font-weight:500}
 .duebtn{display:block;width:100%;margin:0 0 8px;padding:7px 10px;font-size:.78rem;font-family:inherit;
   background:none;border:1px dashed #d8d2c8;color:#8a847c;border-radius:6px;cursor:pointer;text-align:left}
 .duebtn:hover{border-color:#9a6b1f;color:#9a6b1f}
-.duebtn.on{background:#fdf6ec;border-style:solid;border-color:#9a6b1f;color:#9a6b1f;font-weight:600}
-.day-link.is-due::after{content:' •';color:#9a6b1f;font-weight:700}
+.duebtn.on{background:var(--warn-bg);border-style:solid;border-color:var(--warn);color:var(--warn);font-weight:600}
+.day-link.is-due::after{content:' •';color:var(--warn);font-weight:700}
 </style></head>
 <body>
 <div class="topbar">
