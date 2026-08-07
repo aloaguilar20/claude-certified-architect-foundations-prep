@@ -54,6 +54,7 @@ Use both — they reinforce each other.
   - [Claude Code & Agent SDK docs](https://code.claude.com/docs) (CLAUDE.md, skills, hooks, subagents, sessions, headless)
   - [Model Context Protocol](https://modelcontextprotocol.io) (tools, resources, prompts, servers)
 - Topic sequencing was originally inspired by the excellent community guide [paullarionov/claude-certified-architect](https://github.com/paullarionov/claude-certified-architect) — a great complementary resource, with guides in 11 languages. The text here was written independently, reorganized by exam domain, and updated against the current official docs (see the "current-docs notes" flagged throughout, e.g. `pause_turn`, the four-hop import limit, and batch-API tool support).
+- The research and doc-verification behind this kit were done with **Claude Fable 5** — Anthropic's most capable model at the time of writing — which felt fitting for a Claude certification. Every claim was checked against the primary sources above.
 
 ## 🖥 Run the interactive material locally
 
