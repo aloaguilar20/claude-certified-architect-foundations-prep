@@ -17,7 +17,8 @@ Open study materials for Anthropic's **Claude Certified Architect – Foundation
 | [Domain 4 — Prompt Engineering & Structured Output (20%)](guide/04-prompt-engineering.md) | JSON schemas, few-shot, explicit criteria, validation & retry |
 | [Domain 5 — Context Management & Reliability (15%)](guide/05-context-reliability.md) | Error handling, escalation, context strategies, provenance, batches |
 | [28-day study plan](guide/study-plan.md) | A four-week schedule through all of the above |
-| [Cheat sheet](cheatsheets/cheat-sheet.md) · [Flashcards](cheatsheets/flashcards.md) | Last-week consolidation material |
+| **[Interactive flashcards](https://aloaguilar20.github.io/claude-certified-architect-foundations-prep/flashcards.html)** | 51 self-grading cards by domain · missed cards build a persistent review pile · deep-linked from exam results ([markdown source](cheatsheets/flashcards.md)) |
+| **[Interactive cheat sheet](https://aloaguilar20.github.io/claude-certified-architect-foundations-prep/cheat-sheet.html)** | One block per domain + the 5-step scenario method, print-friendly ([markdown source](cheatsheets/cheat-sheet.md)) |
 
 ## 📋 Exam at a glance
 

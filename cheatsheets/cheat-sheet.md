@@ -1,3 +1,5 @@
+<!-- Interactive twin: ../cheat-sheet.html — keep BOTH in sync when content changes. -->
+
 # CCAR-F Cheat Sheet — one page per domain
 
 Last-week consolidation. Details and citations live in the [chapters](../guide/).

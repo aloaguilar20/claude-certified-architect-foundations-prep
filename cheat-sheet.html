@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CCAR-F Cheat Sheet — Claude Certified Architect</title>
+<meta name="description" content="One-page-per-domain cheat sheet for Anthropic's Claude Certified Architect – Foundations (CCAR-F) exam. Last-week consolidation, print-friendly.">
+<style>
+:root{--bg:#faf9f5;--panel:#fff;--ink:#1f1f1c;--soft:#5c5b55;--faint:#8a897f;--line:#e6e4db;--accent:#3b6ea5;--accent-bg:#eaf1f8;--code:#f3f1ea}
+@media(prefers-color-scheme:dark){:root{--bg:#1a1915;--panel:#242320;--ink:#ece9df;--soft:#b4b2a7;--faint:#88867c;--line:#39372f;--accent:#7fb0e6;--accent-bg:#1f2c3a;--code:#2d2b25}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15.5px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+.topbar{position:sticky;top:0;z-index:20;background:var(--panel);border-bottom:1px solid var(--line);padding:10px 18px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.topbar h1{font-size:16px;font-weight:500;margin:0;flex:1;min-width:150px}
+.topnav{display:flex;gap:6px;flex-wrap:wrap}
+.topnav a{color:var(--soft);text-decoration:none;font-size:12.5px;border:1px solid var(--line);border-radius:99px;padding:3px 10px}
+.topnav a:hover{border-color:var(--accent);color:var(--accent)}
+.ghost{background:none;border:1px solid var(--line);color:var(--soft);border-radius:7px;padding:4px 11px;font-size:12.5px;cursor:pointer}
+.ghost:hover{border-color:var(--accent);color:var(--accent)}
+.wrap{max-width:860px;margin:0 auto;padding:24px 22px 80px}
+.intro{color:var(--soft);font-size:14px;margin:0 0 8px}
+.intro a{color:var(--accent)}
+section{scroll-margin-top:64px;margin-top:26px;padding-top:6px}
+h2{font-size:17px;font-weight:600;margin:0 0 10px;padding-bottom:7px;border-bottom:2px solid var(--line)}
+h2 .w{color:var(--faint);font-weight:400;font-size:14px}
+ul{margin:0;padding-left:20px}
+li{margin:7px 0}
+code{background:var(--code);padding:2px 5px;border-radius:4px;font:12.5px/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+.method{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 20px;margin-top:30px}
+.method h2{border:none;padding:0;margin-bottom:8px}
+.method p{margin:0;font-size:15.5px}
+footer{max-width:860px;margin:0 auto;padding:14px 22px 40px;font-size:13px;color:var(--faint);border-top:1px solid var(--line)}
+footer a{color:var(--accent)}
+@media print{
+ :root{--bg:#fff;--panel:#fff;--ink:#000;--soft:#222;--faint:#555;--line:#bbb;--accent:#000;--code:#f0f0f0}
+ body{font-size:11.5px;line-height:1.45}
+ .topbar,.topnav,.ghost,footer .noprint{display:none}
+ .wrap{max-width:none;padding:0}
+ section{margin-top:14px;break-inside:avoid-page}
+ li{margin:3px 0}
+ h2{font-size:13px;margin-bottom:6px;padding-bottom:4px}
+ .method{border:1px solid #999;padding:10px 12px;margin-top:16px}
+ footer{border:none;padding:10px 0 0;font-size:10px}
+}
+</style></head>
+<body>
+<div class="topbar">
+ <h1>CCAR-F Cheat Sheet</h1>
+ <nav class="topnav">
+  <a href="#d1">D1</a><a href="#d2">D2</a><a href="#d3">D3</a><a href="#d4">D4</a><a href="#d5">D5</a><a href="#method">5-step method</a>
+ </nav>
+ <button class="ghost" onclick="window.print()">Print / PDF</button>
+</div>
+<div class="wrap">
+<p class="intro">Last-week consolidation, one block per domain. Details and citations live in the <a href="https://github.com/aloaguilar20/claude-certified-architect-foundations-prep/tree/main/guide" target="_blank" rel="noopener">written chapters</a>; drill the same facts with the <a href="flashcards.html">flashcards</a>. Part of the free <a href="index.html">CCAR-F study kit</a>.</p>
+
+<!-- Content source of truth for this app. The markdown twin lives at
+     cheatsheets/cheat-sheet.md — update BOTH when content changes. -->
+
+<section id="d1">
+<h2>D1 — Agentic Architecture &amp; Orchestration <span class="w">(27%)</span></h2>
+<ul>
+<li><b>API is stateless</b> → resend full history every call.</li>
+<li><b>Loop control = <code>stop_reason</code></b>: <code>tool_use</code> → execute &amp; continue; <code>end_turn</code> → done. Never text-matching, never iteration caps as primary stop.</li>
+<li>Tool results → <code>tool_result</code> block in a <b>user</b> message (no "tool" role).</li>
+<li>Context window failures: <b>lost-in-the-middle</b> (put key info at start/end), tool-result accumulation (trim), lossy summarization (numbers → "roughly").</li>
+<li>Subagents: <b>isolated context, nothing inherited</b>, pass everything in the prompt; coordinator needs <code>Task</code> in allowed tools; parallel spawning = multiple Tasks in one response.</li>
+<li><b>Hooks vs prompts:</b> financial/legal/safety consequence → hook (deterministic). Miscalibrated judgment → explicit criteria + examples, <i>not</i> a hook. Always the <b>least complex fix</b>.</li>
+<li>Decomposition: predictable → fixed pipeline; open-ended → dynamic adaptive. 10+ files in one pass → <b>attention dilution</b> → per-file passes + integration pass.</li>
+<li>Sessions: resume = same thread (stale-file risk); fork = branch from shared context; degraded/stale → fresh session with a summary.</li>
+</ul>
+</section>
+
+<section id="d2">
+<h2>D2 — Tool Design &amp; MCP <span class="w">(18%)</span></h2>
+<ul>
+<li><b>The description IS the selection mechanism.</b> Overlapping/vague descriptions → wrong tool. Fix descriptions before adding routers/classifiers.</li>
+<li>Good description: what it does/returns, input formats + examples, edge cases, <b>when to use vs alternatives</b>.</li>
+<li>Agent prefers built-in over MCP tool → strengthen the MCP description (unique data/advantages).</li>
+<li><code>tool_choice</code>: <code>auto</code> (model decides) · <code>any</code> (must call <i>some</i> tool → guaranteed structure, flexible pick) · <code>tool</code> (forced specific first step) · <code>none</code> (text only).</li>
+<li>MCP primitives: <b>Tools</b> (act) · <b>Resources</b> (read context — an instant "map", no exploratory calls) · <b>Prompts</b> (templates).</li>
+<li>Config: <code>.mcp.json</code> at repo root = team, in VCS, secrets via <code>${ENV_VAR}</code>; user scope = personal experiments. Standard integrations → community servers; custom only for unique workflows.</li>
+<li>Errors: <code>isError: true</code> + <b>category, retryability, message, attempted query, partial results</b> — never "Operation failed".</li>
+</ul>
+</section>
+
+<section id="d3">
+<h2>D3 — Claude Code <span class="w">(20%)</span></h2>
+<ul>
+<li>CLAUDE.md scopes: managed → user (<code>~/.claude/CLAUDE.md</code>, not shared) → project (<code>./CLAUDE.md</code> or <code>.claude/CLAUDE.md</code>, in VCS) → local → directory (on-demand).</li>
+<li><b>Trap:</b> teammate missing conventions = they were user-level; belong project-level in VCS.</li>
+<li>Imports: <code>@path</code> (no space), relative to the <i>importing file</i>, max <b>four hops</b> (older material says five).</li>
+<li><code>.claude/rules/</code> + <code>paths:</code> globs → loads only for matching files. Scattered file types → path rule; one directory → directory CLAUDE.md; procedure → skill; always-true fact → CLAUDE.md.</li>
+<li>Skills = commands (merged). Frontmatter: <code>context: fork</code> (isolated subagent), <code>allowed-tools</code>, <code>argument-hint</code>, <code>disable-model-invocation</code>.</li>
+<li><b>Plan mode</b> for large/ambiguous/unfamiliar/architectural; direct execution for small clear fixes; combined = plan → approve → execute. Explore subagent isolates verbose exploration.</li>
+<li><code>/compact</code> frees context (risk: loses exact numbers); <code>/memory</code> edits persistent memory files.</li>
+<li>Tools: Glob (names) · Grep (contents) · Read · Write · Edit (unique match; fallback Read→modify→Write) · Bash. Investigate incrementally.</li>
+<li>CI/CD: <code>claude -p</code> (headless) + <code>--output-format json</code> + <code>--json-schema</code>; <b>separate instance for review</b> (a session won't challenge its own code); re-reviews get prior findings + "only new/unresolved".</li>
+</ul>
+</section>
+
+<section id="d4">
+<h2>D4 — Prompt Engineering &amp; Structured Output <span class="w">(20%)</span></h2>
+<ul>
+<li>Schema-backed tool use guarantees <b>syntax, never semantics</b>.</li>
+<li><code>required</code> only for always-present data (else fabrication); nullable types for maybe-absent; enums get <code>other</code> + detail and <code>unclear</code>.</li>
+<li>Inconsistent behavior across attempts → <b>add 2–4 examples</b>, not more prose. Examples define boundaries (flag this / not that), formats, informal units.</li>
+<li>Normalization rules in the prompt: ISO dates, currency codes, decimal fractions.</li>
+<li>False positives → explicit include/exclude criteria + severity definitions with examples.</li>
+<li>Chaining for predictable multi-step; interview pattern (ask first) for unfamiliar domains; test-driven iteration; interacting fixes → one batch, independent fixes → sequential.</li>
+<li><b>Retry-with-feedback</b> fixes format/structure/arithmetic (info present). It <b>cannot</b> fix absent information — recognize which side a failure is on.</li>
+<li>Pydantic: structural + business validation, error messages for retry loops, generates the schema (single source of truth).</li>
+<li>Self-correction: <code>stated_total</code> vs <code>calculated_total</code> + <code>conflict_detected</code>; <code>detected_pattern</code> for false-positive analysis.</li>
+</ul>
+</section>
+
+<section id="d5">
+<h2>D5 — Context Management &amp; Reliability <span class="w">(15%)</span></h2>
+<ul>
+<li>Error taxonomy: transient (retry w/ backoff) · validation (fix input) · business (explain, alternative) · permission (escalate).</li>
+<li>Anti-patterns: generic errors, silent suppression (empty ≠ failure!), full abort on one failure (keep partials + annotate coverage), infinite subagent retries (1–2 local, then propagate).</li>
+<li>Escalate on: explicit human request (immediately), policy silence, no progress, financial threshold (hook), ambiguous identity (ask, don't guess).</li>
+<li><b>Not</b> triggers: sentiment, self-rated confidence, bolt-on classifiers. Frustration ≠ "get me a manager": acknowledge → resolve → escalate on reiteration.</li>
+<li>Handoff = self-contained structured summary (human doesn't see the transcript).</li>
+<li>Calibration: field-level confidence + labeled validation sets; stratified sampling — aggregate 97% can hide 40% errors in one document type.</li>
+<li>Context: fact blocks in every prompt; trim tool results (PostToolUse); position-aware layout; scratchpad files; subagent delegation with minimal context budgets; state manifests for crash recovery.</li>
+<li>Provenance: claim + source + date + confidence as a unit; keep conflicting values <i>both</i>, with methodology + dates; render by content type.</li>
+<li>Batches: <b>50% cost, up to 24h, <code>custom_id</code></b>, single invocation per request (no in-batch agent loop). Human waiting → sync; overnight/bulk → batch. Deadline math: submit ≥24h before deadline.</li>
+</ul>
+</section>
+
+<section id="method" class="method">
+<h2>The 5-step scenario method</h2>
+<p>Outcome → binding constraint (<i>must, first, shared, without interaction, policy is silent</i>) → failure mode → <b>least complex fix</b> → test every distractor. Never leave a blank.</p>
+</section>
+</div>
+<footer>Part of a free, open-source <a href="https://github.com/aloaguilar20/claude-certified-architect-foundations-prep" target="_blank" rel="noopener">28-day study kit</a> · created by <strong>Alonso Aguilar</strong> · <a class="noprint" href="https://www.linkedin.com/in/alonso-aguilar-araya/" target="_blank" rel="noopener">LinkedIn</a> · Independent study material — not affiliated with or endorsed by Anthropic.</footer>
+</body>
+</html>

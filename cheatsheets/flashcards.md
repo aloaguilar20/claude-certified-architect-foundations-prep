@@ -1,3 +1,5 @@
+<!-- Interactive twin: ../flashcards.html (embedded CARDS array) — keep BOTH in sync when content changes. -->
+
 # CCAR-F Flashcards
 
 Cover the answer, quiz yourself. Grouped by domain; shuffle in practice.

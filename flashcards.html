@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CCAR-F Flashcards — Claude Certified Architect</title>
+<meta name="description" content="51 interactive flashcards for Anthropic's Claude Certified Architect – Foundations (CCAR-F) exam, grouped by domain, with a self-grading review pile.">
+<style>
+:root{--bg:#faf9f5;--panel:#fff;--ink:#1f1f1c;--soft:#5c5b55;--faint:#8a897f;--line:#e6e4db;--accent:#3b6ea5;--accent-bg:#eaf1f8;--code:#f3f1ea;--done:#1d9e75;--done-bg:#e1f5ee;--warn:#9a6b1f;--warn-bg:#fdf6ec}
+@media(prefers-color-scheme:dark){:root{--bg:#1a1915;--panel:#242320;--ink:#ece9df;--soft:#b4b2a7;--faint:#88867c;--line:#39372f;--accent:#7fb0e6;--accent-bg:#1f2c3a;--code:#2d2b25;--done:#5dcaa5;--done-bg:#13332a;--warn:#d9a94f;--warn-bg:#33290f}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+.topbar{position:sticky;top:0;z-index:20;background:var(--panel);border-bottom:1px solid var(--line);padding:10px 18px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.topbar h1{font-size:16px;font-weight:500;margin:0;flex:1;min-width:180px}
+.prog-wrap{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--soft)}
+.prog{width:140px;height:7px;background:var(--code);border-radius:5px;overflow:hidden}
+.prog-fill{height:100%;width:0;background:var(--done);transition:width .25s}
+.wrap{max-width:760px;margin:0 auto;padding:22px 18px 90px}
+.intro{color:var(--soft);font-size:14px;margin:0 0 16px}
+.intro a{color:var(--accent)}
+.chips{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:10px}
+.chip{background:var(--panel);border:1px solid var(--line);color:var(--soft);border-radius:99px;padding:5px 13px;font-size:13px;cursor:pointer;line-height:1.4}
+.chip:hover{border-color:var(--accent)}
+.chip.on{background:var(--accent-bg);border-color:var(--accent);color:var(--accent);font-weight:600}
+.chip.again-chip.on{background:var(--warn-bg);border-color:var(--warn);color:var(--warn)}
+.tools{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:18px;font-size:13px;color:var(--faint)}
+.ghost{background:none;border:1px solid var(--line);color:var(--soft);border-radius:7px;padding:5px 11px;font-size:13px;cursor:pointer}
+.ghost:hover{border-color:var(--accent);color:var(--accent)}
+.fcard{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:30px 28px;min-height:230px;display:flex;flex-direction:column;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+.fcard .dom{font-size:11.5px;letter-spacing:.04em;text-transform:uppercase;color:var(--faint);margin-bottom:14px}
+.fcard .q{font-size:18px;font-weight:500;line-height:1.5}
+.fcard .a{margin-top:18px;padding-top:16px;border-top:1px dashed var(--line);font-size:15.5px;color:var(--soft);line-height:1.65}
+.fcard .hint{margin-top:auto;padding-top:20px;font-size:12.5px;color:var(--faint)}
+code{background:var(--code);padding:2px 5px;border-radius:4px;font:13px/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+.grade{display:flex;gap:10px;margin-top:14px}
+.grade button{flex:1;border-radius:9px;padding:12px;font-size:14.5px;font-weight:600;cursor:pointer;border:1px solid}
+.gotit{background:var(--done-bg);border-color:var(--done);color:var(--done)}
+.again{background:var(--warn-bg);border-color:var(--warn);color:var(--warn)}
+.grade button:hover{filter:brightness(.96)}
+.counter{font-size:13px;color:var(--faint);margin-top:12px;text-align:center}
+.summary{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:30px 28px;text-align:center}
+.summary .big{font-size:22px;font-weight:500;margin-bottom:8px}
+.summary .sub{color:var(--soft);font-size:14.5px;margin-bottom:20px}
+.summary .actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.pri{background:var(--accent);border:none;color:#fff;border-radius:9px;padding:10px 18px;font-size:14.5px;font-weight:600;cursor:pointer}
+.kbd{border:1px solid var(--line);border-bottom-width:2px;border-radius:4px;padding:0 5px;font:12px ui-monospace,Menlo,monospace;background:var(--code)}
+footer{max-width:760px;margin:0 auto;padding:0 18px 40px;font-size:13px;color:var(--faint);border-top:1px solid var(--line);padding-top:14px}
+footer a{color:var(--accent)}
+.hide{display:none}
+@media(max-width:520px){.fcard{padding:22px 18px}.fcard .q{font-size:16.5px}}
+</style></head>
+<body>
+<div class="topbar">
+ <h1>CCAR-F Flashcards</h1>
+ <div class="prog-wrap"><span id="progTxt">0 / 51 known</span><div class="prog"><div class="prog-fill" id="progFill"></div></div></div>
+</div>
+<div class="wrap">
+<p class="intro">Tap a card (or press <span class="kbd">space</span>) to reveal the answer, then grade yourself — <b>Got it</b> (<span class="kbd">1</span>) or <b>Review again</b> (<span class="kbd">2</span>). Cards you miss build a review pile. Progress is saved on this device. Part of the free <a href="index.html">CCAR-F study kit</a> · <a href="cheat-sheet.html">cheat sheet</a> · <a href="study-guide.html">study reader</a>.</p>
+<div class="chips" id="chips"></div>
+<div class="tools">
+ <button class="ghost" id="shuffleBtn">Shuffle deck</button>
+ <button class="ghost" id="resetBtn">Reset progress</button>
+ <span id="deckInfo"></span>
+</div>
+<div id="cardZone"></div>
+</div>
+<footer>Part of a free, open-source <a href="https://github.com/aloaguilar20/claude-certified-architect-foundations-prep" target="_blank" rel="noopener">28-day study kit</a> · created by <strong>Alonso Aguilar</strong> · <a href="https://www.linkedin.com/in/alonso-aguilar-araya/" target="_blank" rel="noopener">LinkedIn</a> · Independent study material — not affiliated with or endorsed by Anthropic.</footer>
+<script>
+// Card source of truth for this app. The markdown twin lives at
+// cheatsheets/flashcards.md — update BOTH when content changes.
+const DOMAINS={
+ d1:{label:"D1 — Agentic Architecture",short:"D1 Agentic (27%)"},
+ d2:{label:"D2 — Tools & MCP",short:"D2 Tools/MCP (18%)"},
+ d3:{label:"D3 — Claude Code",short:"D3 Claude Code (20%)"},
+ d4:{label:"D4 — Prompt Engineering",short:"D4 Prompting (20%)"},
+ d5:{label:"D5 — Context & Reliability",short:"D5 Context (15%)"}
+};
+const CARDS=[
+{d:"d1",q:"What is the only reliable signal that an agentic task is complete?",a:"<code>stop_reason == \"end_turn\"</code>. Text matching and iteration caps are named anti-patterns."},
+{d:"d1",q:"The model wants a tool executed. What does the response contain and what do you do?",a:"<code>stop_reason == \"tool_use\"</code> with a <code>tool_use</code> content block → execute the tool, append a <code>tool_result</code> block <i>in a user message</i>, call the API again with full history."},
+{d:"d1",q:"Why must you resend the whole conversation every call?",a:"The API is stateless — no state persists between requests."},
+{d:"d1",q:"What context does a subagent inherit from its coordinator?",a:"None. Context isolation is total; everything needed must be passed explicitly in the spawn prompt."},
+{d:"d1",q:"What must a coordinator's allowed tools include to spawn subagents?",a:"The <code>Task</code> tool."},
+{d:"d1",q:"How do you run three subagents in parallel?",a:"The coordinator emits multiple Task calls in a single response."},
+{d:"d1",q:"Refunds over $500 must always be blocked. Prompt or hook?",a:"PreToolUse hook — financial consequence demands deterministic enforcement."},
+{d:"d1",q:"The agent escalates the wrong cases. Hook?",a:"No — that's miscalibrated judgment. Fix with explicit criteria and few-shot examples; a hook can't encode a judgment boundary."},
+{d:"d1",q:"What is the lost-in-the-middle effect and its mitigation?",a:"Long-input details in the middle get missed; place key information near the beginning or end."},
+{d:"d1",q:"Fixed pipeline vs dynamic decomposition — when each?",a:"Fixed: predictable structure, known steps, reproducibility. Dynamic: open-ended scope, each step depends on prior results."},
+{d:"d1",q:"Why does single-pass review of 14 files fail?",a:"Attention dilution — uneven depth, inconsistent flagging, missed obvious bugs. Use per-file passes + an integration pass."},
+{d:"d1",q:"resume vs fork_session?",a:"Resume continues one specific session; fork copies history to a new independent branch (original untouched) — use to compare approaches. Stale files/degraded context → fresh session with a summary instead."},
+{d:"d2",q:"What is the primary mechanism by which Claude selects a tool?",a:"The tool's <b>description</b>."},
+{d:"d2",q:"The agent keeps using built-in Grep instead of your richer MCP search tool. Keyed fix?",a:"Strengthen the MCP tool's description — concrete advantages and unique data. Not removal, hooks, or routing layers."},
+{d:"d2",q:"tool_choice values and effects?",a:"<code>auto</code> (model decides), <code>any</code> (must call some tool), <code>tool</code>+name (must call that tool), <code>none</code> (no tools, text only)."},
+{d:"d2",q:"You need guaranteed structured output but the right schema among three is unknown. Setting?",a:"<code>tool_choice: {\"type\": \"any\"}</code> — forces a tool call, model picks the best schema."},
+{d:"d2",q:"The three MCP primitives?",a:"Tools (actions), Resources (readable context), Prompts (templates)."},
+{d:"d2",q:"Team-shared MCP config — file and secret handling?",a:"<code>.mcp.json</code> at the project root, in version control, secrets via environment-variable expansion like <code>${GITHUB_TOKEN}</code>."},
+{d:"d2",q:"What makes an MCP error useful to an agent?",a:"<code>isError: true</code> plus structure: category, <code>isRetryable</code>, message, attempted query, partial results — enough to choose retry / rephrase / escalate."},
+{d:"d3",q:"New teammate's Claude Code ignores team conventions. Likeliest cause?",a:"Conventions in someone's user-level <code>~/.claude/CLAUDE.md</code> instead of a project-level CLAUDE.md in version control."},
+{d:"d3",q:"@path import rules?",a:"<code>@</code> directly before the path; relative paths resolve relative to the importing file; recursion up to four hops (current docs — older materials say five)."},
+{d:"d3",q:"Test conventions apply to test files scattered everywhere. Directory CLAUDE.md or rule?",a:"<code>.claude/rules/</code> file with <code>paths:</code> glob frontmatter (e.g. <code>**/*.test.ts</code>) — loads only when matching files are touched."},
+{d:"d3",q:"Skill vs CLAUDE.md?",a:"Skill = on-demand procedure (loads when used); CLAUDE.md = always-loaded facts/standards."},
+{d:"d3",q:"What does <code>context: fork</code> do in skill frontmatter?",a:"Runs the skill in an isolated subagent so verbose output doesn't pollute the main session."},
+{d:"d3",q:"When is plan mode the keyed choice?",a:"Large multi-file changes, several plausible approaches, architectural decisions, unfamiliar codebases, wide migrations. Small clear fixes → direct execution."},
+{d:"d3",q:"What risk comes with /compact?",a:"Summarization can lose exact numbers, dates, and specifics."},
+{d:"d3",q:"Find every call site of a function in an unfamiliar repo — first tool?",a:"Grep (content search). Glob is for file names; Read for loading specific files."},
+{d:"d3",q:"The only correct way to run Claude Code in a CI pipeline?",a:"Headless: <code>claude -p \"...\"</code> (with <code>--output-format json</code> and optionally <code>--json-schema</code> for machine-parseable output)."},
+{d:"d3",q:"Why review code with a different instance than the one that wrote it?",a:"The generating session retains its reasoning and won't challenge its own decisions."},
+{d:"d4",q:"What does a JSON schema guarantee — and not?",a:"Guarantees syntax and structure (valid JSON, required fields). Does NOT guarantee semantic correctness."},
+{d:"d4",q:"Why do required fields on sometimes-missing data backfire?",a:"They push the model to fabricate values. Use nullable types so it can honestly return null."},
+{d:"d4",q:"Two schema-design escape valves for categorization?",a:"<code>\"other\"</code> (+ detail field) and <code>\"unclear\"</code> enum values."},
+{d:"d4",q:"Output format interpreted inconsistently across attempts. Most effective fix?",a:"2–4 concrete input/output examples — they beat longer prose descriptions."},
+{d:"d4",q:"When is retry-with-feedback futile?",a:"When the information is absent from the source (or lives in a never-supplied document). Retry only fixes present-but-misorganized data."},
+{d:"d4",q:"What goes into a retry prompt after a validation failure?",a:"The original document, the previous (incorrect) extraction, and the specific error (\"total=150 but line items sum to 145\")."},
+{d:"d4",q:"Pydantic's three exam-relevant roles?",a:"Structural validation, custom business-rule validators, and generating the JSON schema for tool_use (single source of truth) — feeding validate–retry loops."},
+{d:"d4",q:"Detect an invoice that contradicts itself?",a:"Extract <code>stated_total</code> AND <code>calculated_total</code>; flag with <code>conflict_detected</code> when they differ."},
+{d:"d4",q:"Several fixes to request — together or one at a time?",a:"Interacting fixes → one detailed batch; independent fixes → sequential."},
+{d:"d4",q:"When should the agent ask before implementing (interview pattern)?",a:"Unfamiliar domains, non-obvious implications, multiple viable approaches whose best choice depends on context."},
+{d:"d5",q:"Four error categories and the response to each?",a:"Transient → retry w/ exponential backoff; Validation → fix input, retry; Business → explain + alternative; Permission → escalate."},
+{d:"d5",q:"Why is returning an empty result on search failure an anti-pattern?",a:"Silent suppression — the coordinator can't distinguish \"no matches\" from \"search broken\"."},
+{d:"d5",q:"One subagent times out mid-research. Abort?",a:"No — continue with partial results and annotate the coverage gap in the synthesis."},
+{d:"d5",q:"Three named UNRELIABLE escalation triggers?",a:"Sentiment analysis, model self-rated confidence, bolt-on automatic classifiers."},
+{d:"d5",q:"Customer says \"this is outrageous!\" — escalate?",a:"Not yet. Acknowledge → offer concrete resolution → escalate if they reiterate wanting a human. Explicit \"get me a manager\" → escalate immediately."},
+{d:"d5",q:"What does a human need at handoff?",a:"A self-contained structured summary (IDs, issue, root cause, actions taken, amounts, recommendation, reason) — they don't see the transcript."},
+{d:"d5",q:"Aggregate accuracy is 97%. Why still sample?",a:"Stratified sampling by document type/field — aggregates can hide 40% error pockets in one stratum."},
+{d:"d5",q:"Key facts keep degrading through summarization. Fix?",a:"A structured fact block (IDs, amounts, dates, status) re-included in every prompt."},
+{d:"d5",q:"Batch API: cost, window, correlation, limitation?",a:"50% of sync cost; up to 24h, no latency SLA; <code>custom_id</code> per request; each request is one model invocation — no in-batch agent loop."},
+{d:"d5",q:"100-doc batch, 5 fail on context limits. Next step?",a:"Identify failures by <code>custom_id</code>, chunk those documents, resubmit only the 5."},
+{d:"d5",q:"Result needed in 30 hours; batch takes up to 24. Submission window?",a:"6 hours — always submit at least 24h before the deadline."},
+{d:"d5",q:"Two sources give 12% and 8%. What do you store?",a:"Both values, each with source, date, and methodology, plus <code>conflict_detected</code> — never arbitrarily pick one."}
+];
+CARDS.forEach((c,i)=>c.id=i);
+
+const LS_KEY="ccarf-flashcards-v1";
+let state={known:{},again:{}};
+try{const s=JSON.parse(localStorage.getItem(LS_KEY));if(s&&s.known)state=s;}catch(e){}
+const save=()=>localStorage.setItem(LS_KEY,JSON.stringify(state));
+
+let filter="all", deck=[], pos=0, revealed=false;
+
+function buildDeck(){
+ let cards = filter==="again" ? CARDS.filter(c=>state.again[c.id])
+           : filter==="all"   ? CARDS.slice()
+           : CARDS.filter(c=>c.d===filter);
+ deck=cards; pos=0; revealed=false;
+}
+function shuffle(){
+ for(let i=deck.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[deck[i],deck[j]]=[deck[j],deck[i]];}
+ pos=0; revealed=false; render();
+}
+function renderChips(){
+ const el=document.getElementById("chips");
+ const againN=Object.keys(state.again).length;
+ let html='<button class="chip'+(filter==="all"?" on":"")+'" data-f="all">All 51</button>';
+ for(const k in DOMAINS) html+='<button class="chip'+(filter===k?" on":"")+'" data-f="'+k+'">'+DOMAINS[k].short+'</button>';
+ html+='<button class="chip again-chip'+(filter==="again"?" on":"")+'" data-f="again">Review pile ('+againN+')</button>';
+ el.innerHTML=html;
+ el.querySelectorAll(".chip").forEach(b=>b.onclick=()=>{filter=b.dataset.f;buildDeck();render();});
+}
+function renderProgress(){
+ const n=Object.keys(state.known).length;
+ document.getElementById("progTxt").textContent=n+" / "+CARDS.length+" known";
+ document.getElementById("progFill").style.width=(n/CARDS.length*100)+"%";
+}
+function render(){
+ renderChips(); renderProgress();
+ const zone=document.getElementById("cardZone");
+ document.getElementById("deckInfo").textContent=deck.length?("Deck: "+deck.length+" card"+(deck.length>1?"s":"")):"";
+ if(!deck.length){
+  zone.innerHTML='<div class="summary"><div class="big">'+(filter==="again"?"Review pile is empty 🎉":"No cards here")+'</div><div class="sub">'+(filter==="again"?"Miss a card anywhere and it lands here for another pass.":"Pick another domain above.")+'</div></div>';
+  return;
+ }
+ if(pos>=deck.length){
+  const got=deck.filter(c=>state.known[c.id]).length;
+  const againN=Object.keys(state.again).length;
+  zone.innerHTML='<div class="summary"><div class="big">Deck done</div><div class="sub">'+got+' of '+deck.length+' marked known · '+againN+' in the review pile overall.</div><div class="actions">'+
+   (againN?'<button class="pri" id="goAgain">Drill the review pile ('+againN+')</button>':'')+
+   '<button class="ghost" id="restart">Run this deck again</button></div></div>';
+  const ga=document.getElementById("goAgain"); if(ga) ga.onclick=()=>{filter="again";buildDeck();render();};
+  document.getElementById("restart").onclick=()=>{pos=0;revealed=false;render();};
+  return;
+ }
+ const c=deck[pos];
+ zone.innerHTML='<div class="fcard" id="fc"><div class="dom">'+DOMAINS[c.d].label+'</div><div class="q">'+c.q+'</div>'+
+  (revealed?'<div class="a">'+c.a+'</div>':'<div class="hint">Tap or press space to reveal</div>')+'</div>'+
+  (revealed?'<div class="grade"><button class="gotit" id="gotit">Got it ✓ <span class="kbd">1</span></button><button class="again" id="againBtn">Review again <span class="kbd">2</span></button></div>':'')+
+  '<div class="counter">Card '+(pos+1)+' / '+deck.length+'</div>';
+ document.getElementById("fc").onclick=()=>{if(!revealed){revealed=true;render();}};
+ if(revealed){
+  document.getElementById("gotit").onclick=e=>{e.stopPropagation();grade(true);};
+  document.getElementById("againBtn").onclick=e=>{e.stopPropagation();grade(false);};
+ }
+}
+function grade(knowIt){
+ const c=deck[pos];
+ if(knowIt){state.known[c.id]=1;delete state.again[c.id];}
+ else{state.again[c.id]=1;delete state.known[c.id];}
+ save();
+ if(filter==="again"&&knowIt){deck.splice(pos,1);}else{pos++;}
+ revealed=false; render();
+}
+document.getElementById("shuffleBtn").onclick=shuffle;
+document.getElementById("resetBtn").onclick=()=>{
+ const b=document.getElementById("resetBtn");
+ if(b.dataset.arm){state={known:{},again:{}};save();delete b.dataset.arm;b.textContent="Reset progress";buildDeck();render();}
+ else{b.dataset.arm="1";b.textContent="Tap again to confirm reset";setTimeout(()=>{delete b.dataset.arm;b.textContent="Reset progress";},2500);}
+};
+document.addEventListener("keydown",e=>{
+ if(e.target.tagName==="INPUT"||e.target.tagName==="TEXTAREA")return;
+ if(e.key===" "||e.key==="Enter"){e.preventDefault();if(!revealed&&pos<deck.length){revealed=true;render();}}
+ else if(revealed&&e.key==="1")grade(true);
+ else if(revealed&&e.key==="2")grade(false);
+});
+const qp=new URLSearchParams(location.search).get("domain");
+if(qp&&DOMAINS[qp])filter=qp;
+buildDeck(); render();
+</script>
+</body>
+</html>

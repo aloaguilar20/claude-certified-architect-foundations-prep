@@ -110,6 +110,7 @@
         <strong>Quick drill &mdash; 10 questions</strong>
         <span>Ten random questions weighted across all five domains, with instant feedback. Roughly five minutes.</span>
       </button>
+      <div class="sub" style="margin-top:12px">Warm up first: <a href="flashcards.html" style="color:var(--accent-dk);font-weight:600">flashcards</a> &middot; <a href="cheat-sheet.html" style="color:var(--accent-dk);font-weight:600">cheat sheet</a> &mdash; published alongside this exam, same relative-link rule as the study guide.</div>
     </div>
     <div class="card">
       <strong style="font-size:.95rem">Study-guide references</strong>
@@ -420,6 +421,13 @@ function finish(){
       '<li><a href="'+GUIDE+'#'+id+'" target="_blank" rel="noopener">'+v.label+'</a> \u2014 '+
       v.n+' miss'+(v.n>1?'es':'')+
       '<br><span style="color:var(--muted);font-size:.82rem">'+Object.keys(v.refs).join(' \u00b7 ')+'</span></li>').join('')+'</ol>';
+  }
+  // Weak domains (<70%) get direct drill links into the flashcards + cheat sheet
+  const DOMSLUG={'Agentic Architecture':'d1','Tool Design & MCP':'d2','Claude Code Config':'d3','Prompt Engineering':'d4','Context Management':'d5'};
+  const weak=Object.keys(WEIGHTS).filter(d=>byD[d]&&byD[d].t&&(byD[d].c/byD[d].t)<0.7&&DOMSLUG[d]);
+  if(weak.length){
+    planEl.insertAdjacentHTML('beforeend','<div class="sub" style="margin-top:12px"><b>Drill your weak domains:</b> '+
+      weak.map(d=>'<a href="flashcards.html?domain='+DOMSLUG[d]+'" target="_blank" rel="noopener" style="color:var(--accent-dk);font-weight:600">'+d+' flashcards</a> \u00b7 <a href="cheat-sheet.html#'+DOMSLUG[d]+'" target="_blank" rel="noopener" style="color:var(--accent-dk)">cheat sheet</a>').join('<br>')+'</div>');
   }
 
   let out=['CCAR-F Practice Exam Results',
