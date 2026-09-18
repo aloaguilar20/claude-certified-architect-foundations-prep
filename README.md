@@ -6,7 +6,7 @@ Open study materials for Anthropic's **Claude Certified Architect – Foundation
 
 ## ✅ Passed: 940 / 1,000
 
-The maintainer sat the exam on **18 September 2026** (proctored) and passed with a scaled score of **940** (passing score: 720). Materials in this repo were used for preparation, and were strengthened afterwards — see [what changed](#-updated-after-the-exam).
+I sat the exam on **18 September 2026** (proctored) and passed with a scaled score of **940** (passing score: 720). I used this repo's materials to prepare, then strengthened them afterwards — see [what changed](#-updated-after-the-exam).
 
 <a href="https://www.credly.com/badges/4bebefca-9f6c-4465-a344-07eeaf973646/public_url"><img src="assets/ccar-f-badge.png" alt="Claude Certified Architect – Foundations badge — verify on Credly" width="150" align="right"></a>
 
