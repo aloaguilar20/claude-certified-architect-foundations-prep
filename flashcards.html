@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>CCAR-F Flashcards — Claude Certified Architect</title>
-<meta name="description" content="51 interactive flashcards for Anthropic's Claude Certified Architect – Foundations (CCAR-F) exam, grouped by domain, with a self-grading review pile.">
+<meta name="description" content="72 interactive flashcards for Anthropic's Claude Certified Architect – Foundations (CCAR-F) exam, grouped by domain, with a self-grading review pile.">
 <style>
 :root{--bg:#0d1117;--panel:#161b22;--ink:#e6edf3;--soft:#a8b3bf;--faint:#8b949e;--line:#30363d;--accent:#d97757;--accent-bg:#2b1d16;--code:#1c2128;--done:#4fbe8e;--done-bg:#15291f;--warn:#d9a94f;--warn-bg:#33290f}
 @media(prefers-color-scheme:light){:root{--bg:#faf9f5;--panel:#fff;--ink:#1f1f1c;--soft:#5c5b55;--faint:#8a897f;--line:#e6e4db;--accent:#a3492a;--accent-bg:#faeee8;--code:#f3f1ea;--done:#1d9e75;--done-bg:#e1f5ee;--warn:#9a6b1f;--warn-bg:#fdf6ec}}
@@ -52,7 +52,7 @@ footer a{color:var(--accent)}
 <body>
 <div class="topbar">
  <h1>CCAR-F Flashcards</h1>
- <div class="prog-wrap"><span id="progTxt">0 / 51 known</span><div class="prog"><div class="prog-fill" id="progFill"></div></div></div>
+ <div class="prog-wrap"><span id="progTxt">0 / 72 known</span><div class="prog"><div class="prog-fill" id="progFill"></div></div></div>
  <button class="theme-btn" id="themeBtn" aria-label="Switch theme"></button>
 </div>
 <div class="wrap">
@@ -89,6 +89,11 @@ const CARDS=[
 {d:"d1",q:"Fixed pipeline vs dynamic decomposition — when each?",a:"Fixed: predictable structure, known steps, reproducibility. Dynamic: open-ended scope, each step depends on prior results."},
 {d:"d1",q:"Why does single-pass review of 14 files fail?",a:"Attention dilution — uneven depth, inconsistent flagging, missed obvious bugs. Use per-file passes + an integration pass."},
 {d:"d1",q:"resume vs fork_session?",a:"Resume continues one specific session; fork copies history to a new independent branch (original untouched) — use to compare approaches. Stale files/degraded context → fresh session with a summary instead."},
+{d:"d1",q:"Two subagents keep re-reading the same files and duplicating findings. Fix?",a:"The coordinator partitions scope: each spawn prompt names a distinct set of files/questions and says what the other subagents cover."},
+{d:"d1",q:"Three analyses: #1 and #2 independent, #3 compares them. How do you orchestrate?",a:"Emit #1 and #2 as parallel Task calls in one response, then spawn #3 with both results passed explicitly in its prompt."},
+{d:"d1",q:"Subagents are defined correctly but the coordinator never delegates. First thing to check?",a:"Its allowed tools must include the spawning tool — <code>Task</code> in exam material, renamed <code>Agent</code> in current Claude Code (<code>Task</code> still works as an alias)."},
+{d:"d1",q:"Goal-oriented vs procedural subagent instructions — which and why?",a:"Goals + quality criteria + output format. Rigid step lists stop the subagent adapting to what it finds; the coordinator keeps control through the output contract."},
+{d:"d1",q:"Do subagents talk to each other?",a:"No — hub-and-spoke: all communication flows through the coordinator for visibility and error control. (Current docs allow limited nesting depth, capped by <code>CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH</code>, but the exam design keeps the coordinator in charge.)"},
 {d:"d2",q:"What is the primary mechanism by which Claude selects a tool?",a:"The tool's <b>description</b>."},
 {d:"d2",q:"The agent keeps using built-in Grep instead of your richer MCP search tool. Keyed fix?",a:"Strengthen the MCP tool's description — concrete advantages and unique data. Not removal, hooks, or routing layers."},
 {d:"d2",q:"tool_choice values and effects?",a:"<code>auto</code> (model decides), <code>any</code> (must call some tool), <code>tool</code>+name (must call that tool), <code>none</code> (no tools, text only)."},
@@ -96,6 +101,8 @@ const CARDS=[
 {d:"d2",q:"The three MCP primitives?",a:"Tools (actions), Resources (readable context), Prompts (templates)."},
 {d:"d2",q:"Team-shared MCP config — file and secret handling?",a:"<code>.mcp.json</code> at the project root, in version control, secrets via environment-variable expansion like <code>${GITHUB_TOKEN}</code>."},
 {d:"d2",q:"What makes an MCP error useful to an agent?",a:"<code>isError: true</code> plus structure: category, <code>isRetryable</code>, message, attempted query, partial results — enough to choose retry / rephrase / escalate."},
+{d:"d2",q:"MCP server scopes: local vs project vs user?",a:"Local (default): private, this project only. Project: <code>.mcp.json</code>, shared via VCS. User: private, all your projects."},
+{d:"d2",q:"Shared MCP server configured, teammate sees no tools. Check first?",a:"That the <code>${VAR}</code> used in <code>.mcp.json</code> for auth is set in their environment, then verify discovery with <code>/mcp</code> or <code>claude mcp list</code>. Never commit tokens."},
 {d:"d3",q:"New teammate's Claude Code ignores team conventions. Likeliest cause?",a:"Conventions in someone's user-level <code>~/.claude/CLAUDE.md</code> instead of a project-level CLAUDE.md in version control."},
 {d:"d3",q:"@path import rules?",a:"<code>@</code> directly before the path; relative paths resolve relative to the importing file; recursion up to four hops (current docs — older materials say five)."},
 {d:"d3",q:"Test conventions apply to test files scattered everywhere. Directory CLAUDE.md or rule?",a:"<code>.claude/rules/</code> file with <code>paths:</code> glob frontmatter (e.g. <code>**/*.test.ts</code>) — loads only when matching files are touched."},
@@ -106,6 +113,19 @@ const CARDS=[
 {d:"d3",q:"Find every call site of a function in an unfamiliar repo — first tool?",a:"Grep (content search). Glob is for file names; Read for loading specific files."},
 {d:"d3",q:"The only correct way to run Claude Code in a CI pipeline?",a:"Headless: <code>claude -p \"...\"</code> (with <code>--output-format json</code> and optionally <code>--json-schema</code> for machine-parseable output)."},
 {d:"d3",q:"Why review code with a different instance than the one that wrote it?",a:"The generating session retains its reasoning and won't challenge its own decisions."},
+{d:"d3",q:"Glob or Grep?",a:"Glob matches file *paths* (<code>**/*.test.ts</code>); Grep searches file *contents* (identifiers, imports, error strings). Callers are found with Grep, not Glob."},
+{d:"d3",q:"Token-efficient way to explore a codebase?",a:"Narrow-then-read: Glob/Grep to locate (file-list or count output, path/glob/type filters) → Read only the relevant files or line ranges → Grep usages → repeat. Never read everything up front."},
+{d:"d3",q:"Need one function in a 6,000-line file. How?",a:"Grep with line numbers to locate it, then Read with <code>offset</code>/<code>limit</code> for just that window."},
+{d:"d3",q:"When should you use Bash instead of Grep/Glob/Read?",a:"Only for what needs a shell: git history/blame, running tests, builds. Use dedicated tools for search and reading — bounded, structured results."},
+{d:"d3",q:"Exploration is filling the main context. Fix?",a:"Delegate to the read-only Explore subagent (isolated context, returns a summary), keep findings in a scratchpad file, and use <code>/compact</code> when needed."},
+{d:"d3",q:"Three parts of a CI review configuration?",a:"(1) Project CLAUDE.md with the review standards; (2) restricted tools, e.g. <code>--allowedTools</code> read-only; (3) <code>--output-format json</code> + <code>--json-schema</code> so a script can post inline comments. Run with <code>claude -p</code>."},
+{d:"d3",q:"Prevent runaway unattended CI runs?",a:"<code>--max-turns</code>, <code>--max-budget-usd</code>, and a minimal tool allowlist. Not <code>--dangerously-skip-permissions</code>."},
+{d:"d3",q:"Generated code fails some tests. Best next prompt?",a:"Run the suite and give Claude the failing output (expected vs actual); have it fix and re-run. Concrete feedback beats \"try again\"."},
+{d:"d3",q:"Bug report arrives. Most reliable workflow?",a:"Write a failing test that reproduces it → fix until it and the suite pass. The test verifies the fix and guards regressions."},
+{d:"d3",q:"Generated tests are trivial (<code>toBeDefined</code>). Fix?",a:"Provide existing test files, state fixture conventions to reuse, and define what makes a test meaningful (asserts behavior, covers edge cases, fails if the logic breaks)."},
+{d:"d3",q:"Several review issues to relay. How to batch them?",a:"Interacting issues together in one message (one coherent fix); independent issues as separate, focused requests."},
+{d:"d3",q:"Bot says \"LGTM\". Auto-merge?",a:"No. Keep deterministic required checks (tests, lint, build) and human approval for risky changes as the merge gate; AI review is advisory. Never let the authoring session approve its own PR."},
+{d:"d3",q:"\"Every edit must be formatted and linted, no exceptions.\" Where?",a:"A PostToolUse hook — deterministic. CLAUDE.md is guidance, not a guarantee."},
 {d:"d4",q:"What does a JSON schema guarantee — and not?",a:"Guarantees syntax and structure (valid JSON, required fields). Does NOT guarantee semantic correctness."},
 {d:"d4",q:"Why do required fields on sometimes-missing data backfire?",a:"They push the model to fabricate values. Use nullable types so it can honestly return null."},
 {d:"d4",q:"Two schema-design escape valves for categorization?",a:"<code>\"other\"</code> (+ detail field) and <code>\"unclear\"</code> enum values."},
@@ -124,10 +144,11 @@ const CARDS=[
 {d:"d5",q:"What does a human need at handoff?",a:"A self-contained structured summary (IDs, issue, root cause, actions taken, amounts, recommendation, reason) — they don't see the transcript."},
 {d:"d5",q:"Aggregate accuracy is 97%. Why still sample?",a:"Stratified sampling by document type/field — aggregates can hide 40% error pockets in one stratum."},
 {d:"d5",q:"Key facts keep degrading through summarization. Fix?",a:"A structured fact block (IDs, amounts, dates, status) re-included in every prompt."},
-{d:"d5",q:"Batch API: cost, window, correlation, limitation?",a:"50% of sync cost; up to 24h, no latency SLA; <code>custom_id</code> per request; each request is one model invocation — no in-batch agent loop."},
+{d:"d5",q:"Batch API: cost, window, correlation, limitation?",a:"50% of sync cost; results within 24h — that window is the only commitment (often faster, never guaranteed), so never on a blocking path; <code>custom_id</code> per request; each request is one model invocation — no in-batch agent loop."},
 {d:"d5",q:"100-doc batch, 5 fail on context limits. Next step?",a:"Identify failures by <code>custom_id</code>, chunk those documents, resubmit only the 5."},
 {d:"d5",q:"Result needed in 30 hours; batch takes up to 24. Submission window?",a:"6 hours — always submit at least 24h before the deadline."},
-{d:"d5",q:"Two sources give 12% and 8%. What do you store?",a:"Both values, each with source, date, and methodology, plus <code>conflict_detected</code> — never arbitrarily pick one."}
+{d:"d5",q:"Two sources give 12% and 8%. What do you store?",a:"Both values, each with source, date, and methodology, plus <code>conflict_detected</code> — never arbitrarily pick one."},
+{d:"d5",q:"Can a batch run an agent loop that executes tools via Bash?",a:"No. Each item is one independent request; a client-side tool call must be executed by you and resubmitted as a new request. Batch single-shot analysis of pre-collected output, or run a headless <code>claude -p</code> job."},
 ];
 CARDS.forEach((c,i)=>c.id=i);
 
@@ -151,7 +172,7 @@ function shuffle(){
 function renderChips(){
  const el=document.getElementById("chips");
  const againN=Object.keys(state.again).length;
- let html='<button class="chip'+(filter==="all"?" on":"")+'" data-f="all">All 51</button>';
+ let html='<button class="chip'+(filter==="all"?" on":"")+'" data-f="all">All 72</button>';
  for(const k in DOMAINS) html+='<button class="chip'+(filter===k?" on":"")+'" data-f="'+k+'">'+DOMAINS[k].short+'</button>';
  html+='<button class="chip again-chip'+(filter==="again"?" on":"")+'" data-f="again">Review pile ('+againN+')</button>';
  el.innerHTML=html;

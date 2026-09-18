@@ -84,9 +84,9 @@ And carry gaps into the final output as **coverage annotations**: `### Music (PA
 | Attribute | Value |
 |---|---|
 | Cost | **50% of synchronous** pricing |
-| Window | Most batches complete well under **24 hours**; no latency SLA |
+| Window | Up to **24 hours** — that window is the only commitment. Many batches finish sooner (often within about an hour), but nothing is guaranteed, and unfinished requests expire at 24h. Never put a batch on a blocking path |
 | Correlation | `custom_id` links each request to its result |
-| Shape | Each batch request is a single Messages API invocation. Tools and full conversation history are supported *in* a request — but executing a tool and returning its result requires a new request, so an interactive agent loop cannot complete inside a batch. |
+| Shape | Each batch request is an independent Messages API call. Tool definitions and conversation history are supported *in* a request, but a client-side tool call must be executed by you and resubmitted as a new request, so an interactive agent loop cannot complete inside a batch. |
 
 **Batch vs synchronous:**
 

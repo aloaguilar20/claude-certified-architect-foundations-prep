@@ -42,6 +42,21 @@ A: Attention dilution — uneven depth, inconsistent flagging, missed obvious bu
 **Q: resume vs fork_session?**
 A: Resume continues one specific session; fork copies history to a new independent branch (original untouched) — use to compare approaches. Stale files/degraded context → fresh session with a summary instead.
 
+**Q: Two subagents keep re-reading the same files and duplicating findings. Fix?**
+A: The coordinator partitions scope: each spawn prompt names a distinct set of files/questions and says what the other subagents cover.
+
+**Q: Three analyses: #1 and #2 independent, #3 compares them. How do you orchestrate?**
+A: Emit #1 and #2 as parallel Task calls in one response, then spawn #3 with both results passed explicitly in its prompt.
+
+**Q: Subagents are defined correctly but the coordinator never delegates. First thing to check?**
+A: Its allowed tools must include the spawning tool — `Task` in exam material, renamed `Agent` in current Claude Code (`Task` still works as an alias).
+
+**Q: Goal-oriented vs procedural subagent instructions — which and why?**
+A: Goals + quality criteria + output format. Rigid step lists stop the subagent adapting to what it finds; the coordinator keeps control through the output contract.
+
+**Q: Do subagents talk to each other?**
+A: No — hub-and-spoke: all communication flows through the coordinator for visibility and error control. (Current docs allow limited nesting depth, capped by `CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH`, but the exam design keeps the coordinator in charge.)
+
 ## Domain 2 — Tools & MCP
 
 **Q: What is the primary mechanism by which Claude selects a tool?**
@@ -64,6 +79,12 @@ A: `.mcp.json` at the project root, in version control, secrets via environment-
 
 **Q: What makes an MCP error useful to an agent?**
 A: `isError: true` plus structure: category, `isRetryable`, message, attempted query, partial results — enough to choose retry / rephrase / escalate.
+
+**Q: MCP server scopes: local vs project vs user?**
+A: Local (default): private, this project only. Project: `.mcp.json`, shared via VCS. User: private, all your projects.
+
+**Q: Shared MCP server configured, teammate sees no tools. Check first?**
+A: That the `${VAR}` used in `.mcp.json` for auth is set in their environment, then verify discovery with `/mcp` or `claude mcp list`. Never commit tokens.
 
 ## Domain 3 — Claude Code
 
@@ -96,6 +117,45 @@ A: Headless: `claude -p "..."` (with `--output-format json` and optionally `--js
 
 **Q: Why review code with a different instance than the one that wrote it?**
 A: The generating session retains its reasoning and won't challenge its own decisions.
+
+**Q: Glob or Grep?**
+A: Glob matches file *paths* (`**/*.test.ts`); Grep searches file *contents* (identifiers, imports, error strings). Callers are found with Grep, not Glob.
+
+**Q: Token-efficient way to explore a codebase?**
+A: Narrow-then-read: Glob/Grep to locate (file-list or count output, path/glob/type filters) → Read only the relevant files or line ranges → Grep usages → repeat. Never read everything up front.
+
+**Q: Need one function in a 6,000-line file. How?**
+A: Grep with line numbers to locate it, then Read with `offset`/`limit` for just that window.
+
+**Q: When should you use Bash instead of Grep/Glob/Read?**
+A: Only for what needs a shell: git history/blame, running tests, builds. Use dedicated tools for search and reading — bounded, structured results.
+
+**Q: Exploration is filling the main context. Fix?**
+A: Delegate to the read-only Explore subagent (isolated context, returns a summary), keep findings in a scratchpad file, and use `/compact` when needed.
+
+**Q: Three parts of a CI review configuration?**
+A: (1) Project CLAUDE.md with the review standards; (2) restricted tools, e.g. `--allowedTools` read-only; (3) `--output-format json` + `--json-schema` so a script can post inline comments. Run with `claude -p`.
+
+**Q: Prevent runaway unattended CI runs?**
+A: `--max-turns`, `--max-budget-usd`, and a minimal tool allowlist. Not `--dangerously-skip-permissions`.
+
+**Q: Generated code fails some tests. Best next prompt?**
+A: Run the suite and give Claude the failing output (expected vs actual); have it fix and re-run. Concrete feedback beats "try again".
+
+**Q: Bug report arrives. Most reliable workflow?**
+A: Write a failing test that reproduces it → fix until it and the suite pass. The test verifies the fix and guards regressions.
+
+**Q: Generated tests are trivial (`toBeDefined`). Fix?**
+A: Provide existing test files, state fixture conventions to reuse, and define what makes a test meaningful (asserts behavior, covers edge cases, fails if the logic breaks).
+
+**Q: Several review issues to relay. How to batch them?**
+A: Interacting issues together in one message (one coherent fix); independent issues as separate, focused requests.
+
+**Q: Bot says "LGTM". Auto-merge?**
+A: No. Keep deterministic required checks (tests, lint, build) and human approval for risky changes as the merge gate; AI review is advisory. Never let the authoring session approve its own PR.
+
+**Q: "Every edit must be formatted and linted, no exceptions." Where?**
+A: A PostToolUse hook — deterministic. CLAUDE.md is guidance, not a guarantee.
 
 ## Domain 4 — Prompt Engineering & Structured Output
 
@@ -156,7 +216,7 @@ A: Stratified sampling by document type/field — aggregates can hide 40% error 
 A: A structured fact block (IDs, amounts, dates, status) re-included in every prompt.
 
 **Q: Batch API: cost, window, correlation, limitation?**
-A: 50% of sync cost; up to 24h, no latency SLA; `custom_id` per request; each request is one model invocation — no in-batch agent loop.
+A: 50% of sync cost; results within 24h — that window is the only commitment (often faster, never guaranteed), so never on a blocking path; `custom_id` per request; each request is one model invocation — no in-batch agent loop.
 
 **Q: 100-doc batch, 5 fail on context limits. Next step?**
 A: Identify failures by `custom_id`, chunk those documents, resubmit only the 5.
@@ -166,3 +226,7 @@ A: 6 hours — always submit at least 24h before the deadline.
 
 **Q: Two sources give 12% and 8%. What do you store?**
 A: Both values, each with source, date, and methodology, plus `conflict_detected` — never arbitrarily pick one.
+
+**Q: Can a batch run an agent loop that executes tools via Bash?**
+A: No. Each item is one independent request; a client-side tool call must be executed by you and resubmitted as a new request. Batch single-shot analysis of pre-collected output, or run a headless `claude -p` job.
+

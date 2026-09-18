@@ -69,8 +69,9 @@ A server is a process implementing the protocol. On connect, its tools are disco
 
 | Scope | File | Traits |
 |---|---|---|
+| Local (default) | `~/.claude.json`, keyed to the current project | Private to you, this project only; good for a server you're trying out |
 | Project (team) | `.mcp.json` at repo root | Checked into version control; secrets via env-var expansion (`${GITHUB_TOKEN}`) — tokens are never committed; applies to all contributors |
-| User (personal) | user-scope config (`~/.claude.json`) | Not shared; personal/experimental servers |
+| User (personal) | user-scope config (`~/.claude.json`) | Not shared; available in **all** your projects |
 
 ```json
 {
@@ -83,6 +84,10 @@ A server is a process implementing the protocol. On connect, its tools are disco
   }
 }
 ```
+
+`.mcp.json` supports `${VAR}` and `${VAR:-default}` expansion (in `command`, `args`, `env`, `url`, `headers`). An unset variable with no default is *not* an error you'll notice — the server just fails to authenticate.
+
+**Verify, don't assume:** if a teammate or CI runner reports "no Jira tools," check (1) the env var is defined in *that* environment and (2) the server shows up with its tools in `/mcp` or `claude mcp list`. Committing the token to "fix" it is always wrong.
 
 See [MCP in Claude Code](https://code.claude.com/docs/en/mcp) for current scopes and syntax.
 

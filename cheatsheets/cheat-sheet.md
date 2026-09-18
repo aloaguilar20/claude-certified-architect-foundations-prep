@@ -16,6 +16,7 @@ Last-week consolidation. Details and citations live in the [chapters](../guide/)
 - **Hooks vs prompts:** financial/legal/safety consequence → hook (deterministic). Miscalibrated judgment → explicit criteria + examples, *not* a hook. Always the **least complex fix**.
 - Decomposition: predictable → fixed pipeline; open-ended → dynamic adaptive. 10+ files in one pass → **attention dilution** → per-file passes + integration pass.
 - Sessions: resume = same thread (stale-file risk); fork = branch from shared context; degraded/stale → fresh session with a summary.
+- **Subagent management:** coordinator *partitions* scope (no overlap) · independent → parallel Task calls in one response, dependent → sequential with outputs passed explicitly · coordinator ignoring subagents = spawning tool (`Task`, now `Agent`) missing from its allowed tools · delegate goals + output contract, not step lists.
 
 ## D2 — Tool Design & MCP (18%)
 
@@ -26,6 +27,7 @@ Last-week consolidation. Details and citations live in the [chapters](../guide/)
 - MCP primitives: **Tools** (act) · **Resources** (read context — an instant "map", no exploratory calls) · **Prompts** (templates).
 - Config: `.mcp.json` at repo root = team, in VCS, secrets via `${ENV_VAR}`; user scope = personal experiments. Standard integrations → community servers; custom only for unique workflows.
 - Errors: `isError: true` + **category, retryability, message, attempted query, partial results** — never "Operation failed".
+- **MCP scopes:** local (default, private, this project) · project (`.mcp.json`, shared, `${VAR}` for secrets) · user (private, all projects). No tools? Check the env var, then `/mcp` / `claude mcp list`.
 
 ## D3 — Claude Code (20%)
 
@@ -38,6 +40,10 @@ Last-week consolidation. Details and citations live in the [chapters](../guide/)
 - `/compact` frees context (risk: loses exact numbers); `/memory` edits persistent memory files.
 - Tools: Glob (names) · Grep (contents) · Read · Write · Edit (unique match; fallback Read→modify→Write) · Bash. Investigate incrementally.
 - CI/CD: `claude -p` (headless) + `--output-format json` + `--json-schema`; **separate instance for review** (a session won't challenge its own code); re-reviews get prior findings + "only new/unresolved".
+- **Exploration:** Glob = names, Grep = contents (callers → Grep). Locate cheaply (files-only/count, path/glob filters) → Read a slice (`offset`/`limit`) → follow usages. Bash only for git/tests/builds; Explore subagent + scratchpad for long explorations.
+- **Review config = 3 parts:** project CLAUDE.md standards + read-only `--allowedTools` + `--output-format json --json-schema`. Runaway control: `--max-turns`, `--max-budget-usd`.
+- **Testing:** give existing tests + fixture conventions + criteria; feed failing output back; bug → failing test first; interacting issues in one message, independent ones separate.
+- **PR merge:** deterministic required checks + human approval gate the merge; AI review is advisory; hooks (PostToolUse) enforce "every edit" rules.
 
 ## D4 — Prompt Engineering & Structured Output (20%)
 
@@ -64,6 +70,7 @@ Last-week consolidation. Details and citations live in the [chapters](../guide/)
 - Batches: **50% cost, up to 24h, `custom_id`**, single invocation per request (no in-batch agent loop). Human waiting → sync; overnight/bulk → batch. Deadline math: submit ≥24h before deadline.
 
 ---
+- **Batch vs sync:** blocking → sync; bulk/overnight → Batches (50% off, 24h is the only commitment). No client-side tool loop inside a batch.
 
 ## The 5-step scenario method
 

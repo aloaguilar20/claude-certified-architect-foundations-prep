@@ -4,11 +4,22 @@ Open study materials for Anthropic's **Claude Certified Architect – Foundation
 
 > **Not affiliated with or endorsed by Anthropic.** This is independent, community-built study material. Exam names are Anthropic trademarks. Always verify logistics against the official exam guide and certification pages before scheduling.
 
+## ✅ Passed: 940 / 1,000
+
+The maintainer sat the exam on **18 September 2026** (proctored) and passed with a scaled score of **940** (passing score: 720). Materials in this repo were used for preparation, and were strengthened afterwards — see [what changed](#-updated-after-the-exam).
+
+<a href="https://www.credly.com/badges/4bebefca-9f6c-4465-a344-07eeaf973646/public_url"><img src="assets/ccar-f-badge.png" alt="Claude Certified Architect – Foundations badge — verify on Credly" width="150" align="right"></a>
+
+**Score: 940 / 1,000** · passing score 720 · result: **Pass**  
+**[Verify my credential on Credly →](https://www.credly.com/badges/4bebefca-9f6c-4465-a344-07eeaf973646/public_url)**  
+Credential: [Claude Certified Architect – Foundations](https://www.credly.com/org/anthropic/badge/claude-certified-architect-foundations) (badge artwork © Anthropic, shown here to identify the credential I earned).
+
+
 ## 🚀 Start here
 
 | Resource | What it is |
 |---|---|
-| **[Interactive practice exam](https://aloaguilar20.github.io/claude-certified-architect-foundations-prep/practice-exam.html)** | 51 scenario-anchored questions · study / timed-simulation / quick-drill modes · scaled 100–1,000 scoring at the 720 line · generates a ranked review plan |
+| **[Interactive practice exam](https://aloaguilar20.github.io/claude-certified-architect-foundations-prep/practice-exam.html)** | 71 scenario-anchored questions · study / timed-simulation / quick-drill modes · scaled 100–1,000 scoring at the 720 line · generates a ranked review plan |
 | **[Interactive study reader](https://aloaguilar20.github.io/claude-certified-architect-foundations-prep/study-guide.html)** | The full guide as a day-by-day reader with progress tracking, deep-linked from every exam question |
 | [Exam guide & strategy](guide/00-exam-guide.md) | Format, scoring, retakes, the six scenarios, and a 5-step method for scenario questions |
 | [Domain 1 — Agentic Architecture & Orchestration (27%)](guide/01-agentic-architecture.md) | The agentic loop, subagents, hooks, decomposition, sessions |
@@ -17,10 +28,19 @@ Open study materials for Anthropic's **Claude Certified Architect – Foundation
 | [Domain 4 — Prompt Engineering & Structured Output (20%)](guide/04-prompt-engineering.md) | JSON schemas, few-shot, explicit criteria, validation & retry |
 | [Domain 5 — Context Management & Reliability (15%)](guide/05-context-reliability.md) | Error handling, escalation, context strategies, provenance, batches |
 | [28-day study plan](guide/study-plan.md) | A four-week schedule through all of the above |
-| **[Interactive flashcards](https://aloaguilar20.github.io/claude-certified-architect-foundations-prep/flashcards.html)** | 51 self-grading cards by domain · missed cards build a persistent review pile · deep-linked from exam results ([markdown source](cheatsheets/flashcards.md)) |
+| **[Interactive flashcards](https://aloaguilar20.github.io/claude-certified-architect-foundations-prep/flashcards.html)** | 72 self-grading cards by domain · missed cards build a persistent review pile · deep-linked from exam results ([markdown source](cheatsheets/flashcards.md)) |
 | **[Interactive cheat sheet](https://aloaguilar20.github.io/claude-certified-architect-foundations-prep/cheat-sheet.html)** | One block per domain + the 5-step scenario method, print-friendly ([markdown source](cheatsheets/cheat-sheet.md)) |
 
-> **About the practice-exam questions:** all 51 items are AI-generated with Claude Fable 5 from the official exam guide's published domains and scenario contexts. They are original practice questions written to test your understanding of the material — **not real exam questions**, not derived from the actual item bank, and not predictive of the specific questions you will face.
+> **About the practice-exam questions:** all 71 items are AI-generated. The first 51 were written with Claude Fable 5 from the official exam guide's published domains and scenario contexts; the 20 added after the exam were written with Claude Sonnet 5 and checked against the current official docs. They are original practice questions written to test your understanding of the material — **not real exam questions**, not derived from the actual item bank, and not predictive of the specific questions you will face.
+
+## 🔄 Updated after the exam
+
+After passing, I went back over this kit and strengthened the topics that matter most in day-to-day Claude Code and agent work. No exam items or exam-guide text were copied — everything below is written from the public documentation:
+
+- **+20 practice questions** (now 71) on subagent coordination, codebase exploration (Glob vs Grep vs Read, token-efficient search), test generation and iteration, CI review configuration, PR merge gates, and MCP scopes.
+- **New guide sections:** *Managing subagents well* (Domain 1), *Built-in tools and codebase exploration* and *Configuring an automated review / Testing strategies / PR merging* (Domain 3), MCP scopes and verification (Domain 2).
+- **+21 flashcards** (now 72) and new cheat-sheet reflexes for each of these.
+- **Correction:** the Batch API's only commitment is completion within 24 hours; many batches finish sooner, but nothing is guaranteed.
 
 ## 📋 Exam at a glance
 

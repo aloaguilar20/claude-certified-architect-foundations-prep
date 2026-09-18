@@ -76,18 +76,42 @@ The **Explore subagent** isolates verbose codebase exploration and returns only 
 - **/compact** summarizes prior history to free the context window in long sessions. Risk: exact numbers, dates and specifics can be lost in summarization. (Project-root CLAUDE.md is re-injected after compaction; nested/path-scoped rules reload on next matching file access.)
 - **/memory** opens the memory files (CLAUDE.md and friends) for editing — persist notes, preferences, and conventions across sessions instead of re-explaining every time.
 
-## 3.6 Built-in tools
+## 3.6 Built-in tools and codebase exploration
 
 | Task | Tool |
 |---|---|
-| Find files by name/pattern | **Glob** (`**/*.test.tsx`) |
+| Find files by name/pattern | **Glob** (`**/*.test.tsx`) — matches paths only |
 | Search file contents | **Grep** (function name, error message, import) |
-| Read a file | **Read** |
+| Read a file (or a slice of it) | **Read** (`offset` / `limit`) |
 | Create a file | **Write** |
 | Precise in-place change | **Edit** (unique text match) |
 | Shell commands (git, npm, tests) | **Bash** |
 
-**Incremental investigation:** don't read everything at once. Grep entry points → Read those files → Grep usages → Read consumers → repeat.
+([Tools reference](https://code.claude.com/docs/en/tools-reference))
+
+**The reflex:** Glob answers *"which files?"* by **name**; Grep answers *"where is this?"* by **content**. Finding the callers of `calculateTax` is a Grep job — a Glob for `*tax*` misses every caller whose filename doesn't say "tax".
+
+### The token-efficient exploration loop
+
+1. **Locate cheaply.** Grep with file-list output (the default) or `count` first; scope with `path`, `glob` or `type`; cap noisy output with `head_limit`. Switch to `content` mode only once the search is narrow.
+2. **Read narrowly.** Read just the files that matter — for a huge file, Grep with line numbers, then Read a window with `offset`/`limit`.
+3. **Follow the thread.** Grep usages of what you learned → Read consumers → repeat. Build understanding incrementally instead of reading everything up front.
+4. **Trace through re-exports.** If a Grep for a name only hits a barrel/`index` file, read the barrel, collect the exported names (they may be aliased), then Grep each one.
+5. **Use dedicated tools, not shell pipelines.** `grep -r | head` and `cat` through Bash produce unbounded, unstructured output. Reserve Bash for what needs a shell: git history, running tests, builds.
+
+### Keeping a long exploration alive
+
+- **Delegate verbose searching** to the read-only **Explore** subagent: it works in its own context and returns a summary, so the main context stays clean.
+- **Write findings to a scratchpad file** (structure, entry points, open questions). It survives `/compact`, context limits and session boundaries.
+- **On resume,** start from the scratchpad plus a targeted re-check of files that changed since (`git diff`), rather than re-exploring from scratch.
+
+| Anti-pattern | Better |
+|---|---|
+| Read every file to find usages | Grep → Read the hits |
+| Glob to find callers | Grep (contents), Glob only for name patterns |
+| Grep in `content` mode across the whole repo first | Files-only/count → narrow → content |
+| `cat`/`grep -r` via Bash | Read / Grep |
+| Read a 6,000-line file whole | Grep `-n`, then Read `offset`/`limit` |
 
 **Edit fallback:** if Edit fails on a non-unique match → Read the file, modify programmatically, Write it back.
 
@@ -107,6 +131,45 @@ claude -p "Review this PR for security issues" \
 
 **Duplicate comments on re-review:** include the prior review results in context and instruct Claude to report only new or unresolved issues.
 
+### Configuring an automated review (the pattern to memorize)
+
+A CI review job has three parts, and exam questions test all three:
+
+1. **Load the right standards** — review criteria live in the **project-level** `CLAUDE.md` checked into the repo, so every run and every teammate gets them (not in a user-level file on someone's laptop).
+2. **Restrict tool access** — a reviewer reads; it must not edit. Use a read-only allowlist (`--allowedTools "Read,Grep,Glob"`, or `--tools` to limit what exists at all).
+3. **Structured output** — `--output-format json` with `--json-schema`; the validated result comes back in the `structured_output` field, ready to turn into inline PR comments.
+
+```bash
+claude -p "Review this PR against our standards" \
+  --allowedTools "Read,Grep,Glob" \
+  --output-format json --json-schema "$(cat review-schema.json)" \
+  --max-turns 15 --max-budget-usd 2
+```
+
+**Runaway protection for unattended runs:** `--max-turns` and `--max-budget-usd` (print mode) bound the loop; a minimal allowlist bounds the blast radius. `--dangerously-skip-permissions` removes a safeguard — it is never the answer to "the job keeps stopping."
+
+### Testing strategies
+
+- **Give context, not adjectives.** For test generation, supply existing test files, name the fixture conventions to reuse, and define what makes a test meaningful (asserts behavior, covers edge cases, fails if the logic breaks). "More thorough" produces more of the same.
+- **Tests are the feedback loop.** Run the suite and hand Claude the *failing output* (expected vs actual). Concrete failures beat "try again."
+- **Bugs: reproduce first.** Write a failing test that reproduces the report → fix until it and the suite pass. The test verifies the fix and stays as a regression guard.
+- **Communicating issues:** interacting problems go in **one** message (one coherent fix); independent problems go as separate, focused requests.
+- **Input/output examples** beat prose for transformations — when a description keeps being misread, show 2–3 concrete before/after pairs.
+
+### Finding more bugs in review
+
+- **Independent reviewer:** a fresh session or subagent reviews the diff — the authoring session shares its own blind spots.
+- **Multi-pass for big PRs:** per-file passes for local issues, then a separate cross-file integration pass. One pass over 14 files loses depth.
+- **Cut false positives with explicit criteria:** state what to flag (bugs, security), what to skip (style nits, accepted patterns), and feed prior findings back in so re-reviews report only new or unresolved issues.
+
+### PR merging: deterministic gates vs. probabilistic review
+
+An AI reviewer that says "LGTM" is **advisory**. What actually gates a merge is deterministic — required CI checks (tests, lint, build) — plus human approval for risky areas. Hooks (e.g. a `PostToolUse` formatter/linter hook) enforce rules on every edit; CLAUDE.md only *guides*. Never let the session that wrote the code approve its own PR.
+
+### Batch or synchronous in a pipeline?
+
+Blocking pre-merge check → **synchronous**. Nightly or weekly bulk report → **Batches API** (50% cheaper, results within 24h — the only commitment). And no agent loops in a batch: each item is one independent request, so a client-side tool call can't be executed and continued inside it.
+
 ---
 
 ## Exam reflexes for this domain
@@ -115,3 +178,6 @@ claude -p "Review this PR for security issues" \
 - Scattered file types → `paths`-scoped rule; one directory → directory CLAUDE.md; procedure → skill; always-true fact → CLAUDE.md.
 - Big/ambiguous/unfamiliar → plan mode. Small/clear → direct.
 - CI → `-p` with JSON output + schema; separate instance for review.
+- Review config = project CLAUDE.md standards + read-only tools + JSON schema output. Runaway control = `--max-turns` / `--max-budget-usd`.
+- Glob = names, Grep = contents, Read a slice; narrow before you read. Bash is for git/tests/builds.
+- Failing tests → give Claude the failure output. Bug → failing test first. AI "LGTM" never replaces required checks + human approval.

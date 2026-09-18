@@ -2,3 +2,5 @@
 Thumbs.db
 *.log
 node_modules/
+scorereport.pdf
+.playwright-mcp/

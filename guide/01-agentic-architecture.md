@@ -145,6 +145,26 @@ Task: "Analyze the following document.
 
 **Parallel spawning:** a coordinator can request multiple Task calls in one response — those subagents run concurrently.
 
+> **Naming note:** exam material says the `Task` tool; current Claude Code calls it `Agent` and keeps `Task` as an alias. Either way, the coordinator's allowed tools must include it ([subagents docs](https://code.claude.com/docs/en/agent-sdk/subagents)).
+
+### Managing subagents well
+
+The five failure modes the exam keeps returning to, and the fix for each:
+
+| Symptom | Cause | Fix |
+|---|---|---|
+| Two subagents re-read the same files and duplicate findings | Overlapping scope | Coordinator **partitions** work: each spawn prompt names a distinct scope and what the others cover |
+| Slow run, tasks obviously independent | Sequential spawning | Emit the independent Task calls **in one response** |
+| A dependent step starts with nothing to work on | Parallelized a dependency | Sequence it; pass the prior outputs **explicitly** in its prompt |
+| Coordinator does everything itself | Spawning tool missing from its allowed tools, or the subagent isn't wired in | Add `Task`/`Agent` to the coordinator's tools; check the AgentDefinition |
+| Subagent goes off-role (edits files, calls unrelated tools) | Tools not restricted | Give each `AgentDefinition` only the tools its role needs (a reviewer gets Read/Grep/Glob) |
+
+**Delegate goals, not procedures.** "Find credible sources on X, cover both sides, return claim + evidence + source URL" lets the subagent adapt to what it finds. A rigid step list breaks the moment reality differs. The coordinator keeps control through the *output contract*, not by scripting each step.
+
+**Spawn prompt checklist:** the goal and quality bar · all prior findings and source metadata it needs · its exact scope (and what is out of scope) · the output schema · what to return on failure (error type, what was tried, partial results).
+
+**Keep the coordinator in charge.** All communication flows through the coordinator — that is what makes progress observable and errors controllable. Current docs do allow limited subagent nesting (default depth cap of 3, tunable with `CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH`), but exam scenarios assume hub-and-spoke: workers report up, the coordinator re-delegates.
+
 ---
 
 ## 1.4 Hooks: deterministic guardrails

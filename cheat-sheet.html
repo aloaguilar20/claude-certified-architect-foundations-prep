@@ -68,6 +68,7 @@ footer a{color:var(--accent)}
 <li><b>Hooks vs prompts:</b> financial/legal/safety consequence → hook (deterministic). Miscalibrated judgment → explicit criteria + examples, <i>not</i> a hook. Always the <b>least complex fix</b>.</li>
 <li>Decomposition: predictable → fixed pipeline; open-ended → dynamic adaptive. 10+ files in one pass → <b>attention dilution</b> → per-file passes + integration pass.</li>
 <li>Sessions: resume = same thread (stale-file risk); fork = branch from shared context; degraded/stale → fresh session with a summary.</li>
+<li><b>Subagent management:</b> coordinator <i>partitions</i> scope (no overlap) · independent → parallel Task calls in one response, dependent → sequential with outputs passed explicitly · coordinator ignoring subagents = spawning tool (<code>Task</code>, now <code>Agent</code>) missing from its allowed tools · delegate goals + output contract, not step lists.</li>
 </ul>
 </section>
 
@@ -81,6 +82,7 @@ footer a{color:var(--accent)}
 <li>MCP primitives: <b>Tools</b> (act) · <b>Resources</b> (read context — an instant "map", no exploratory calls) · <b>Prompts</b> (templates).</li>
 <li>Config: <code>.mcp.json</code> at repo root = team, in VCS, secrets via <code>${ENV_VAR}</code>; user scope = personal experiments. Standard integrations → community servers; custom only for unique workflows.</li>
 <li>Errors: <code>isError: true</code> + <b>category, retryability, message, attempted query, partial results</b> — never "Operation failed".</li>
+<li><b>MCP scopes:</b> local (default, private, this project) · project (<code>.mcp.json</code>, shared, <code>${VAR}</code> for secrets) · user (private, all projects). No tools? Check the env var, then <code>/mcp</code> / <code>claude mcp list</code>.</li>
 </ul>
 </section>
 
@@ -96,6 +98,10 @@ footer a{color:var(--accent)}
 <li><code>/compact</code> frees context (risk: loses exact numbers); <code>/memory</code> edits persistent memory files.</li>
 <li>Tools: Glob (names) · Grep (contents) · Read · Write · Edit (unique match; fallback Read→modify→Write) · Bash. Investigate incrementally.</li>
 <li>CI/CD: <code>claude -p</code> (headless) + <code>--output-format json</code> + <code>--json-schema</code>; <b>separate instance for review</b> (a session won't challenge its own code); re-reviews get prior findings + "only new/unresolved".</li>
+<li><b>Exploration:</b> Glob = names, Grep = contents (callers → Grep). Locate cheaply (files-only/count, path/glob filters) → Read a slice (<code>offset</code>/<code>limit</code>) → follow usages. Bash only for git/tests/builds; Explore subagent + scratchpad for long explorations.</li>
+<li><b>Review config = 3 parts:</b> project CLAUDE.md standards + read-only <code>--allowedTools</code> + <code>--output-format json --json-schema</code>. Runaway control: <code>--max-turns</code>, <code>--max-budget-usd</code>.</li>
+<li><b>Testing:</b> give existing tests + fixture conventions + criteria; feed failing output back; bug → failing test first; interacting issues in one message, independent ones separate.</li>
+<li><b>PR merge:</b> deterministic required checks + human approval gate the merge; AI review is advisory; hooks (PostToolUse) enforce "every edit" rules.</li>
 </ul>
 </section>
 
@@ -126,6 +132,7 @@ footer a{color:var(--accent)}
 <li>Context: fact blocks in every prompt; trim tool results (PostToolUse); position-aware layout; scratchpad files; subagent delegation with minimal context budgets; state manifests for crash recovery.</li>
 <li>Provenance: claim + source + date + confidence as a unit; keep conflicting values <i>both</i>, with methodology + dates; render by content type.</li>
 <li>Batches: <b>50% cost, up to 24h, <code>custom_id</code></b>, single invocation per request (no in-batch agent loop). Human waiting → sync; overnight/bulk → batch. Deadline math: submit ≥24h before deadline.</li>
+<li><b>Batch vs sync:</b> blocking → sync; bulk/overnight → Batches (50% off, 24h is the only commitment). No client-side tool loop inside a batch.</li>
 </ul>
 </section>
 
